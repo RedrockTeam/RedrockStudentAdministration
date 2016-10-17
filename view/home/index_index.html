@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<input type="file" id="file">
+	<input type="submit" id="submit">
+	<script>
+		var submit = document.querySelector('#submit');
+		submit.addEventListener('click', function(){
+			var file = document.querySelector('#file').files[0];
+				var perLength = 100;
+				var counter = 0;
+			(function a(){
+					var xhr = new XMLHttpRequest();
+					var start = counter * perLength;
+					var blob = file.slice(start, start + perLength);	
+					var formdata = new FormData();
+					formdata.append('peace' + counter, blob);
+					formdata.append('name', 'peace'+counter);
+					formdata.append('time', counter)
+					xhr.open('POST', '/home/index/upload');
+					if(!blob.size){
+						formdata.append("complete", true);
+						xhr.send(formdata);
+						return;
+					}
+					console.log(formdata);
+					xhr.send(formdata);
+					xhr.addEventListener('load', function(){
+						console.log('第'+counter+'次');
+						counter++;
+						a();
+					})
+				})()
+		})
+	</script>
+</body>
+</html>
