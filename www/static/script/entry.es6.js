@@ -1,7 +1,7 @@
 'use strict';
 
 ;(function () {
-    app.setRootLocation('/home');
+    app.setRootLocation('/home/view');
     var Router = app.Router;
     var entryApp = document.getElementById('entryApp');
     var loginRouter = new Router();

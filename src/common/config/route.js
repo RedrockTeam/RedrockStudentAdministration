@@ -1,3 +1,3 @@
 export default [
-  [/^home\/.+$/, "home/index/index"]
+  [/^home\/view\/?.*$/, "home/index/index"]
 ];
