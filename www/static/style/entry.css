@@ -1,0 +1,31 @@
+.navbar {
+    background: #cf4646;
+    color: #fff !important;
+}
+#navbar-title {
+    font-size: 16px;
+}
+.navbar-header > a {
+    color: #fff !important;
+}
+#redrock-tsm + small {
+    line-height: 50px;
+}
+#left-nav-tabs > .active > a {
+    color: #cf4646 !important;
+}
+#left-nav-tabs > li > a{
+    color: #333;
+}
+.page-header {
+    border: none;
+}
+.page-header > h1 > small {
+    padding: 4px 4px;
+    border: 1px solid #999;
+    font-size: 12px;
+    border-radius: 6px;
+}
+.pagination > ul > li > a {
+    color: #cf4646;
+}

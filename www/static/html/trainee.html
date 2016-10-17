@@ -1,0 +1,64 @@
+<compont>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    <div class="span3">
+                        <ul class="nav nav-tabs nav-stacked" id="left-nav-tabs">
+                            <li>
+                                <a id="infLink" href="/trainee/my_inf">我的信息</a>
+                            </li>
+                            <li>
+                                <a id="workLink" href="/trainee/my_work">作业任务</a>
+                            </li>
+                            <li>
+                                <a id="lessonLink" href="/trainee/my_lesson">课件资料</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="traineeWorkApp" class="span9"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        ;(function () {
+            var traineeWorkApp = document.getElementById('traineeWorkApp');
+            var infLink = document.getElementById('infLink'),
+                workLink = document.getElementById('workLink'),
+                lessonLink = document.getElementById('lessonLink');
+            var activeTarget;
+            var changeActiveTarget = function (target) {
+                if (activeTarget !== target) {
+                    if (activeTarget) activeTarget.className = '';
+                    activeTarget = target;
+                    activeTarget.className = 'active';
+                }
+            }
+            traineeIndexRouter.route('/my_inf', function (next) {
+                changeActiveTarget(infLink.parentNode);
+                this.render('/static/html/trainee_inf.html', traineeWorkApp)
+                    .then(function () {
+                        next();
+                    });
+            });
+            traineeIndexRouter.route('/my_work', function (next) {
+                changeActiveTarget(workLink.parentNode);
+                this.render('/static/html/trainee_work.html', traineeWorkApp)
+                    .then(function () {
+                        next();
+                    });
+            });
+            traineeIndexRouter.route('/my_lesson', function (next) {
+                changeActiveTarget(lessonLink.parentNode);
+                this.render('/static/html/trainee_lesson.html', traineeWorkApp)
+                    .then(function () {
+                        next();
+                    });
+            });
+            app.capture(infLink);
+            app.capture(workLink);
+            app.capture(lessonLink);
+        }());
+    </script>
+</compont> 

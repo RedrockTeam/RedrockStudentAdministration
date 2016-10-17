@@ -1,0 +1,21 @@
+{
+  "name": "rsm",
+  "version": "1.0.0",
+  "description": "网校学员管理系统",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lc",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.16.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-if": "^2.0.1",
+    "gulp-imagemin": "^3.0.3",
+    "gulp-js-minify": "0.0.3",
+    "gulp-plumber": "^1.1.0"
+  }
+}
