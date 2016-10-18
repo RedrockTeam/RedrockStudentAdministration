@@ -5,16 +5,34 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
-  /**
-   * index action
-   * @return {Promise} []
-   */
-  lalala(){
-    console.log("ok")
-  }
-  indexAction(){
-		this.session('userId', 2014213898)
-    return this.display()
+
+  async login(partern){
+    
+    let stunum = partern.post.stunum || null,
+        password = partern.post.password || null
+    if(!stunum || !password)
+    return {
+      status: 400,
+      message: "参数不足"
+    }
+    let res = await this.model('student')
+                        .where({
+                          stu_num: stunum,
+                          stu_password: password
+                        })
+                        .select()
+    if(!res){
+      return{
+        status: 400,
+        message: "用户名密码不正确"
+      }
+    }else{
+      await this.session('stunum', stunum)
+      return {
+        status: 200,
+        message: "登陆成功"
+      }
+    }
   }
 /**	
  * 上传接口
