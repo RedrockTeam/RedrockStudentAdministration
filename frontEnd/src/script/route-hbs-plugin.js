@@ -83,8 +83,14 @@
         var frg = document.createDocumentFragment();
         var childNodesArray = [].slice.call(childNodes);
         childNodesArray.forEach(function (item) {
-            if (item.nodeName === 'STYLE' && typeof styleLoader === 'function') item.innerHTML = styleLoader(item.innerHTML);
-            if (item.nodeName === 'SCRIPT' && typeof scriptLoader === 'function ') item.innerHTML = scriptLoader(item.innerHTML);
+            if (item.nodeName === 'STYLE' && typeof styleLoader === 'function') 
+                item.innerHTML = styleLoader(item.innerHTML);
+            if (item.nodeName === 'SCRIPT') {
+                item.innerHTML = '(function() {' + item.innerHTML + '}())';
+                if (typeof scriptLoader === 'function ') {
+                    item.innerHTML = scriptLoader(item.innerHTML);
+                }
+            }
             frg.appendChild(item);
         });
         return frg;
