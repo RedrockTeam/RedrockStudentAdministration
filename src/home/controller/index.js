@@ -21,7 +21,7 @@ export default class extends Base {
 		if(this.isPost())
 			  parterns.post = this.postParterns()
 		parterns.get = this.getParterns()
-		this.dispatch(role, action, parterns)
+		await this.dispatch(role, action, parterns)
 	}
 
   getPath(){
