@@ -11,33 +11,34 @@ export default class extends Base {
     let stunum = partern.post.stunum || null,
         password = partern.post.password || null
     if(!stunum || !password)
-    return {
+    return this.json({
       status: 400,
       message: "参数不足"
-    }
-    let res = await this.model('student')
-                        .where({
-                          stu_num: stunum,
-                          stu_password: password
-                        })
-                        .select()
-    if(!res){
-      return{
+    })
+    let res = await this
+    .model('student')
+    .where({
+      stu_num: stunum,
+      stu_password: password
+    })
+    .select()
+    if(!res.length){
+      return this.json({
         status: 400,
         message: "用户名密码不正确"
-      }
+      })
     }else{
       await this.session('stunum', stunum)
-      return {
+      return this.json({
         status: 200,
         message: "登陆成功"
-      }
+      })
     }
   }
 /**	
  * 上传接口
  */
-  async uploadAction(){
+  async uploadAction(partern){
 		let	_redis = new  redis.createClient();
 		_redis.on("error", function (err) {
 				console.log("Error " + err);

@@ -51,7 +51,6 @@ export default class extends Base {
 				status: 400,
 				message: "参数不足"
 			})
-		let message = await this.controller(role, 'home')[action](parterns)
-		return this.json(message)
+		await this.controller(role, 'home')[action](parterns)
 	}
 }
