@@ -66,7 +66,7 @@ export default class extends Base {
         realName = `${uploadPath}/${fileName}`,
         is_exit = fs.existsSync(uploadPath)
         if(!is_exit){
-          this.mkdir(uploadPath)
+          this.makedir(uploadPath)
         }
 		    await fs.renameSync(filePath, realName)
         
@@ -140,7 +140,7 @@ export default class extends Base {
 				let completeFile = Buffer.concat(fileArr)
         return think.rmdir(`${message.savePath}`, true)
         .then(() => {
-          this.mkdir(`${message.savePath}`);
+          this.makedir(`${message.savePath}`);
           fs.writeFile(`${message.savePath}/${message.hw_id}.zip`, completeFile, () => {
             _redis.del(message.stunum)
             this.success();
