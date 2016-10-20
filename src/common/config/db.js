@@ -11,10 +11,10 @@ export default {
     mysql: {
       host: '127.0.0.1',
       port: '',
-      database: '',
-      user: '',
+      database: 'stumanage',
+      user: 'root',
       password: '',
-      prefix: 'think_',
+      prefix: '',
       encoding: 'utf8'
     },
     mongo: {

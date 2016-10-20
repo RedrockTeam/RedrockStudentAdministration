@@ -12,7 +12,8 @@
     "babel-runtime": "6.x.x",
     "formidable": "^1.0.17",
     "redis": "^2.6.2",
-    "thinkjs": "2.1.x"
+    "thinkjs": "2.1.x",
+    "unzip": "^0.1.11"
   },
   "devDependencies": {
     "babel-cli": "6.x.x",
