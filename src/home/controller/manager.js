@@ -6,22 +6,22 @@ export default class extends Base {
   /**
   *入口
     {
+        path:文件路径
         name: 文件名
     }
   */  
   async indexAction(){
-    let userId = await this.session('userId');
-    let name = this.post().name;
-    let _path = think.RESOURCE_PATH+'/upload/'+userId;
+    let id = 2;
+    let name = '1.zip';
+    let _path = './www/upload/2014213898/web研发部/1/';
     fs.createReadStream(_path+name).pipe(unzip.Extract({path:_path}));
     //出口
-    await unzipDb(userId,name);
+    await this.unzipDb(id);
+    //this.success(1);
   }
 
-  async unzipDb(userId,name){
-    let student = this.model('student');
-    let id = await student.getId({stu_num: userId});
+  async unzipDb(id){
     let commit = this.model('commit');
-    await commit.addPlace({});
+    await commit.dec({id:id},{is_free:1});
   }
 }
