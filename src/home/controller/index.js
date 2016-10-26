@@ -10,8 +10,8 @@ import Base from './base.js'
 export default class extends Base {
 
   indexAction(){
-		this.display()
-|	}
+		return this.display()
+	}
 
 	async routeAction(){
 		let path = this.getPath(),	//{role: 控制器名，action: 方法名}

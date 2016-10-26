@@ -21,8 +21,8 @@
 					formdata.append('peace' + counter, blob);
 					formdata.append('fileName', 'peace'+counter);
 					formdata.append('fileTime', counter)
-					formdata.append('branch', 'web研发部')
-					formdata.append('hw_id', 1)
+					formdata.append('branch', '视觉设计部')
+					formdata.append('hw_id', 2)
 					xhr.open('POST', '/home/index/route?role=student&action=upload');
 					if(!blob.size){
 						formdata.append("complete", true);

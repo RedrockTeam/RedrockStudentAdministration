@@ -43,7 +43,7 @@ export default class extends Base {
     let passwd = this.post('passwd');
     let info = await this.model('branch').findManager({
       b_manager: name,
-      b_password: passwd; 
+      b_password: passwd
     });
     if (this.isEmpty(info)) {
       return res(400,'用户名或密码错误')
@@ -57,9 +57,9 @@ export default class extends Base {
   /**
   *人员管理
   */
-  async personManage() {
-    let id = await session('managerId');
-    let persons =  
-  }
+  // async personManage() {
+  //   let id = await session('managerId');
+  //   let persons =  
+  // }
 
 }
