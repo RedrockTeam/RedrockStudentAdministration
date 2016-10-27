@@ -4,7 +4,7 @@
  */
 export default class extends think.model.base {
     async findManager(_config) {
-        return this
+        return await this
                 .where(_config)
                 .find();
     }

@@ -1,6 +1,6 @@
 'use strict';
 export function res(state, message) {
-    return this.json({
+    return JSON.stringify({
         status: state,
         message: message
     })

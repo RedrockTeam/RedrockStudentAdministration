@@ -10,14 +10,18 @@ import Base from './base.js'
 export default class extends Base {
 
   indexAction(){
+<<<<<<< HEAD
+		this.display()
+=======
 		return this.display()
+>>>>>>> 28611fbb371d032a22bedfdd01f321d8c76abf14
 	}
 
 	async routeAction(){
 		let path = this.getPath(),	//{role: 控制器名，action: 方法名}
 				role = path.role,
 				action = path.action,
-				parterns = {}
+				parterns = {} 
 		if(this.isPost())
 			  parterns.post = this.postParterns()
 		parterns.get = this.getParterns()
