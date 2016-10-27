@@ -11,13 +11,13 @@ export default class extends Base {
 
   indexAction(){
 		this.display()
-|	}
+	}
 
 	async routeAction(){
 		let path = this.getPath(),	//{role: 控制器名，action: 方法名}
 				role = path.role,
 				action = path.action,
-				parterns = {}
+				parterns = {} 
 		if(this.isPost())
 			  parterns.post = this.postParterns()
 		parterns.get = this.getParterns()
