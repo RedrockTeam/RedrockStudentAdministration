@@ -137,7 +137,6 @@ export default class extends Base {
   time:截止时间
   branch: await session('managerId') 部门id
   */
-<<<<<<< HEAD
   async publishWork(partern) {
     let title = 'DADA';
     let expain = 'DADA';
@@ -154,12 +153,6 @@ export default class extends Base {
       this._json(200,'发布成功');
     }
   }
-=======
-  // async personManage() {
-  //   let id = await session('managerId');
-  //   let persons =  
-  // }
->>>>>>> 28611fbb371d032a22bedfdd01f321d8c76abf14
 
   /**
   *未已截止作业
