@@ -5,23 +5,6 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
-  getStuMessageById(id){
-    let	_redis = new redis.createClient();
-    return new Promise((resolve, reject)=>{
-      _redis.get(id, async (err, message) => {
-        if(err) return console.log(err)
-        if(message) resolve(message)
-        else{
-          let data = await this
-          .model('student')
-          .getStuMessageById(id)
-          _redis.set(id, JSON.stringify(data))
-          resolve(data)
-        }
-      })
-    })
-  }
-
 /** 
  * 登录方法，
  * stunum password
@@ -47,17 +30,17 @@ export default class extends Base {
         status: 400,
         message: "用户名密码不正确"
       })
-    }else{
+    }else{   
+      let stuBase = await this
+          .model('student')
+          .getStuMessageById(id[0].id)
       await this.session('stunum', stunum)
-      let stuPromise = this.getStuMessageById(id[0].id)
-      stuPromise.then((data)=>{
-        return this.json({
-          status: 200,
-          message: "登陆成功",
-          stuBase: data
-        })
-      }).catch((err) => {
-        throw new Error(err)
+      await this.session('id', id[0].id)
+      await this.session('stubase', stuBase)
+      return this.json({
+        status: 200,
+        message: "登陆成功",
+        stuBase: stuBase
       })
     }
   }
@@ -72,6 +55,7 @@ export default class extends Base {
  */
   async upload(partern){
     await this.session('stunum', 2014213897)
+    await this.session('id', 1)
 		let	_redis = new  redis.createClient();
 		_redis.on("error", function (err) {
 				console.log("Error " + err);
@@ -106,7 +90,7 @@ export default class extends Base {
       .model('student')
       .commitHomework({
         hw_id: hw_id,
-        stu_id: stunum,
+        stu_id: await this.session('id'),
         hw_time: think.datetime(),
         hw_score: 0,
         cm_place: uploadPath + '/' + hw_id
@@ -233,5 +217,43 @@ export default class extends Base {
   makedir(path){
     think.mkdir(path)
     think.chmod(path)
+  }
+  /**
+   * 通过学号获取对应类型的作业列表
+   * id: 学生id
+   * type:{ 
+   * 0 => 未完成
+   * 1 => 已完成
+   * 2 => 已过期
+   */
+  async getHomeWorkById(partern){
+    let id = partern.get.id,
+        type = partern.get.type || 0
+    if(!id) return this.json({
+      status: 400,
+      message: "参数不足"
+    })
+    let res;
+    switch (type) {
+      case "0":
+        res = await this
+        .model('student')
+        .getUnfinsh(id)
+        break;
+      case "1":
+        res = await this
+        .model('student')
+        .getFinsh(id)
+        break;
+      case "2":
+        res = await this
+        .model('student')
+        .getTimeout(id)
+        break;
+    }
+    return this.json({
+      status: 200,
+      homeworks: res
+    })
   }
 }
