@@ -5,6 +5,22 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
+  getStuMessageById(id){
+    let	_redis = new redis.createClient();
+    return new Promise((resolve, reject)=>{
+      _redis.get(id, async (err, message) => {
+        if(err) return console.log(err)
+        if(message) resolve(message)
+        else{
+          let data = await this
+          .model('student')
+          .getStuMessageById(id)
+          _redis.set(id, JSON.stringify(data))
+          resolve(data)
+        }
+      })
+    })
+  }
 
 /** 
  * 登录方法，
@@ -20,23 +36,28 @@ export default class extends Base {
       status: 400,
       message: "参数不足"
     })
-    let res = await this
+    let id = await this
     .model('student')
-    .where({
+    .selectId({
       stu_num: stunum,
       stu_password: password
     })
-    .select()
-    if(!res.length){
+    if(!id.length){
       return this.json({
         status: 400,
         message: "用户名密码不正确"
       })
     }else{
       await this.session('stunum', stunum)
-      return this.json({
-        status: 200,
-        message: "登陆成功"
+      let stuPromise = this.getStuMessageById(id[0].id)
+      stuPromise.then((data)=>{
+        return this.json({
+          status: 200,
+          message: "登陆成功",
+          stuBase: data
+        })
+      }).catch((err) => {
+        throw new Error(err)
       })
     }
   }
@@ -50,7 +71,7 @@ export default class extends Base {
  * }
  */
   async upload(partern){
-    await this.session('stunum', 2014213898)
+    await this.session('stunum', 2014213897)
 		let	_redis = new  redis.createClient();
 		_redis.on("error", function (err) {
 				console.log("Error " + err);
@@ -80,6 +101,7 @@ export default class extends Base {
         stunum: stunum,
         hw_id: hw_id
       }))
+      this.pushIntoQueue(_redis, stunum, uploadPath)
       let res = await this
       .model('student')
       .commitHomework({
@@ -109,33 +131,79 @@ export default class extends Base {
       complete: false,
     });
   }
+  /**
+   * 域是connectQueue
+   * name: stunum
+   * value: uploadpath
+   */
+  pushIntoQueue(_redis, stunum, uploadPath){
+    const key = 'connectQueue'
+    return _redis.hset(key, stunum, uploadPath)
+  }
 
-	readFilePromise(path){
-		return new Promise((resolve, reject) => {
-			fs.readFile(path, (err, chunk)=>{
-				if(err)
-					return reject(err)
-					resolve(chunk)
-			})
-		})
-	}
 /**
- * 文件分片拼接任务队列
+ * 文件分片拼接
+ * 先便利queue队列,把待处理的学号拿出来,
+ * 将每一个学号对应交给connectByStunum方法处理
+ * 进入下一次循环
  */
-	async task(){
-		let	_redis = new redis.createClient();
-		_redis.hgetall("2014213898", (err, res) => {
-			let content = [],
-          message = {}
-			for(let i in res){
-				if(i == "complete") continue
-        if(i == "message"){
-          message = JSON.parse(res[i])
-          continue
+  checkPromise(_redis, key){
+    return new Promise((resolve, reject) => {
+      _redis.hgetall(key, (err, res) => {
+        resolve(res)
+      })
+    })
+  }
+
+  taskAction(){
+    const key = 'connectQueue'
+    let	_redis = new redis.createClient();
+    this
+    .checkPromise(_redis, key)
+    .then(res => {
+      if(res == null){
+        console.log(res)
+        return setTimeout(()=>{this.taskAction()}, 20000)
+      }
+      let promiseArr = []
+      for(let i in res){
+        promiseArr.push(this.connectByStunum(_redis, i))
+      }
+      Promise.all(promiseArr)
+      .then((keys) => {
+        for(let i = 0; i < keys.length; i++){
+          this.pop(keys[i], _redis)
         }
-				content[parseInt(i)] = this.readFilePromise(res[i]);
-			}
-			Promise.all(content)
+        console.log(keys)
+        setTimeout(()=>{this.taskAction()}, 20000)
+        return this.success()
+      })
+    })
+    .catch(err => {console.log(err)})
+  }
+  pop(stunum, _redis){
+    const key = 'connectQueue'
+    _redis.hdel(key, stunum)
+  }
+	connectByStunum(_redis, key){
+    return new Promise((resolve, reject)=>{
+      _redis.hgetall(key, (err, res) => {
+        let content = [],
+            message = {}
+        for(let i in res){
+          if(i == "complete") continue
+          if(i == "message"){
+            message = JSON.parse(res[i])
+            continue
+          }
+          content[parseInt(i)] = this.readFilePromise(res[i]);
+        }
+        return this.connect(_redis, content, message, resolve, key)
+      })
+    })
+	}
+  connect(_redis, content, message, resolve, key){
+    return Promise.all(content)
 			.then((fileArr) => {
 				let completeFile = Buffer.concat(fileArr)
         return think.rmdir(`${message.savePath}`, true)
@@ -143,7 +211,7 @@ export default class extends Base {
           this.makedir(`${message.savePath}`);
           fs.writeFile(`${message.savePath}/${message.hw_id}.zip`, completeFile, () => {
             _redis.del(message.stunum)
-            this.success();
+            resolve(key)
           })
         }).catch(err => {
           console.log(err)
@@ -151,6 +219,14 @@ export default class extends Base {
 			})
 			.catch(err => {
 				console.log(err)
+			})
+  }
+  readFilePromise(path){
+		return new Promise((resolve, reject) => {
+			fs.readFile(path, (err, chunk)=>{
+				if(err)
+					return reject(err)
+					resolve(chunk)
 			})
 		})
 	}
