@@ -77,4 +77,13 @@ export default class extends think.model.base {
           data = await this.query(sql)
           return data
     }
+    async getCourseWare(id){
+      let data = await this
+      .model('courseware')
+      .where({
+        cw_branch: id
+      })
+      .select()
+      return data
+    }
 }

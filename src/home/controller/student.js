@@ -5,12 +5,19 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
+  creatRedisCilent(){
+    let	_redis = new  redis.createClient();
+		_redis.on("error", function (err) {
+				console.log("Error " + err);
+		});
+    return _redis
+  }
+
 /** 
  * 登录方法，
  * stunum password
  * session设置学号
  */
-
   async login(partern){
     let stunum = partern.post.stunum || null,
         password = partern.post.password || null
@@ -56,10 +63,7 @@ export default class extends Base {
   async upload(partern){
     await this.session('stunum', 2014213897)
     await this.session('id', 1)
-		let	_redis = new  redis.createClient();
-		_redis.on("error", function (err) {
-				console.log("Error " + err);
-		});
+		let	_redis = this.creatRedisCilent()
 		let fileMessage = partern.post,
 				stunum = await this.session('stunum'),
 				fileName = fileMessage.fileName,
@@ -256,4 +260,54 @@ export default class extends Base {
       homeworks: res
     })
   }
+
+  /**
+   * 课件资料数据接口
+   * b_id: 部门的id
+   * return: 对应部门的全部课件
+   */
+   getCourseWare(partern){
+    let b_id = partern.get.b_id,
+    _redis = this.creatRedisCilent()
+    this
+    .getCourseWareCache(_redis, b_id)
+    .then((courseWare) => {
+      if(!courseWare){
+        let data = this
+        .model('student')
+        .getCourseWare(b_id)
+        .then((data) => {
+          this.setCacheWare(_redis, b_id, JSON.stringify(data))
+          this.json({
+            status: 200,
+            message: 'ok',
+            courseWare: data
+          })
+        })
+      }else{
+        this.json({
+            status: 200,
+            message: 'ok',
+            courseWare: courseWare
+          })
+      }
+    })
+    .catch(err => {
+      throw new Error(err)
+    })
+  }
+  setCacheWare(_redis, id, data){
+    const key = 'courseWare'
+    _redis.hset(key, id, data)
+  }
+  getCourseWareCache(_redis, id){
+    const key = 'courseWare'
+    return new Promise((resolve, reject) => {
+      _redis.hget(key, id, (err, chunk)=>{
+        if(err) return console.log(err)
+        resolve(chunk)
+      })
+    })
+  }
+  
 }

@@ -8,7 +8,7 @@ export default class extends Base {
   _json(status,message) {
     return this.json({
       status: status,
-      message: this.json(message);
+      message: this.json(message)
     })
   }
   /**
@@ -197,7 +197,6 @@ export default class extends Base {
       return this._json(200,check);
     }
   }
-
 
 
 }

@@ -10,11 +10,7 @@ import Base from './base.js'
 export default class extends Base {
 
   indexAction(){
-<<<<<<< HEAD
-		this.display()
-=======
 		return this.display()
->>>>>>> 28611fbb371d032a22bedfdd01f321d8c76abf14
 	}
 
 	async routeAction(){
