@@ -15,8 +15,16 @@ export default class extends Base {
 
 /** 
  * 登录方法，
- * stunum password
- * session设置学号
+ * input:{
+ *    stunum//学号
+ *    password//
+ * }
+ * return{
+ *    status: 200
+ *    message: 信息
+ *    stubase: 该学生所有信息
+ * }
+ * session设置学号与学生id //学号主要用于上传用，普通逻辑用于其他业务
  */
   async login(partern){
     let stunum = partern.post.stunum || null,
@@ -53,12 +61,18 @@ export default class extends Base {
   }
 /**	
  * 上传接口
- * partern{
- *    fileName: 文件名
- *    filePath: tmp文件路径
- *    fileTime: 上传文件次数
- *    realpath: www/upload/学号/部门/文件名
+ * input post{
+ *    fileName: 分片的文件名(要与次数有关比如 peace1 peace2 peace3)每个分片的文件名不同
+ *    fileTime: 分片的第几次
+ *    hw_id: 作业的id在查看作业记录的返回信息里有
+ *    branch: 作业对应的部门名字
+ *    complete: true/false 标志是否已经上传完毕（是否为分片的最后一个文件）
  * }
+ * return json{
+ *    status: 200
+ *    complete: 文件是否已经全部上传完毕 
+ * }
+ *    
  */
   async upload(partern){
     await this.session('stunum', 2014213897)
@@ -224,11 +238,18 @@ export default class extends Base {
   }
   /**
    * 通过学号获取对应类型的作业列表
-   * id: 学生id
-   * type:{ 
-   * 0 => 未完成
-   * 1 => 已完成
-   * 2 => 已过期
+   * input: get{
+   *    id: 学生id
+   *    type:{ 
+   *        0 => 未完成
+   *        1 => 已完成
+   *        2 => 已过期
+   *    }
+   * }
+   * return json{
+   *     status: 200,
+   *     homeworks: 所有作业记录 
+   * }
    */
   async getHomeWorkById(partern){
     let id = partern.get.id,
@@ -263,8 +284,14 @@ export default class extends Base {
 
   /**
    * 课件资料数据接口
-   * b_id: 部门的id
-   * return: 对应部门的全部课件
+   * input get{
+   *    b_id: 部门的id
+   * }
+   * return: json{
+   *    status: 200,
+   *    message: 'ok',
+   *    courseWare: 对应部门的所有课件资料
+   * }
    */
    getCourseWare(partern){
     let b_id = partern.get.b_id,
