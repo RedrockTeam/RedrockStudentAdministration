@@ -316,7 +316,8 @@ export default class extends Base {
             status: 200,
             message: 'ok',
             courseWare: courseWare
-          })
+        })
+        _redis.quit()
       }
     })
     .catch(err => {
@@ -326,6 +327,7 @@ export default class extends Base {
   setCacheWare(_redis, id, data){
     const key = 'courseWare'
     _redis.hset(key, id, data)
+    _redis.quit()
   }
   getCourseWareCache(_redis, id){
     const key = 'courseWare'

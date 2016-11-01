@@ -44,13 +44,21 @@ export default class extends Base {
       passwd:this.post('passwd')密码
     }
   */
-  async loginIn(partern) {
-    let name = 'web';
-    let passwd = '1234';
-    let info = await this.model('branch').findManager({
+  async login(partern) {
+    let name = partern.post.username;
+    let passwd = partern.post.password;
+    console.log(name, passwd)
+    if(!name || !passwd)
+      return this.json({
+        status: 400,
+        message: '参数不足'
+      })
+    let info = await this.model('branch')
+    .findManager({
       b_manager: name,
       b_password: passwd
     });
+    console.log(info)
     if (think.isEmpty(info)) {
       return this.json({
         status: 400,
@@ -69,6 +77,9 @@ export default class extends Base {
   /**
   *人员管理
     branch: await session('managerId'), 登陆后把部门id存入
+    page: get, 第几页
+    每页默认15条数据
+    type: 排序规则 up(分数升序, 默认)/dowm(分数降序)
       rertun: [{ 
             id: 2,
             stu_id: 1,
@@ -79,8 +90,16 @@ export default class extends Base {
             }]
   */
   async personManage(partern) {
-    let branch = 1;
-    let persons =  await this.model('stubranch').allPerson({b_id:branch});
+    let branch = await this.session('managerId'),
+        page = partern.get.page || 1,
+        type = partern.get.type || 'up'
+    let persons = await this
+    .model('stubranch')
+    .allPerson({
+      b_id: branch,
+      page: page,
+      type: type
+    });
     //return
     if(persons.length == 0){
       return this._json(400,'查询人员管理页失败');
@@ -96,11 +115,15 @@ export default class extends Base {
   branch: await session('managerId') 部门id
   */
   async changeScore(partern) {
-    let score = 97;
-    let branch = 1;
-    let id = 2;
+    let score = partern.post.score;
+    let id = partern.post.stu_id;
     let state = await this.model('stubranch')
-    .updateScore({b_id: branch, stu_id: id},{sb_score: score});
+    .updateScore({
+      b_id: await this.session('managerId'), 
+      stu_id: id
+    },{
+      sb_score: score
+    });
     if(state === 0) {
       this._json(400,'修改分数失败');
     } else {
@@ -115,10 +138,14 @@ export default class extends Base {
   2.判断此人是否还有其他部门
   */
   async delStu(partern){
-    let branch = 1;
-    let id = 2;
-    let state = await this.model('stubranch').delStu({b_id: branch, stu_id: id});
-    let isNull = await this.model('stubranch').isNull({stu_id: id});
+    let branch = await session('managerId');
+    let id = partern.get.stu_id;
+    let state = await this
+    .model('stubranch')
+    .delStu({b_id: branch, stu_id: id});
+    let isNull = await this
+    .model('stubranch')
+    .isNull({stu_id: id});
     if(think.isEmpty(isNull)) {
       //删除所有记录
       //的步骤！
@@ -129,7 +156,33 @@ export default class extends Base {
       this._json(200,'删除成功');
     }
   }
-
+  // async selectStudent(partern){
+  //   let message = partern.get.message,
+  //       type    = partern.get.type,
+  //       branch  = session('managerId'),
+  //       res = []
+  //   switch (type) {
+  //     case 'stunum':
+  //       res = await this
+  //       .model('stubranch')
+  //       .selectByStunum(message, branch)
+  //       break;
+  //     case 'academy':
+  //       res = await this
+  //       .model('stubranch')
+  //       .selectByAcademy(message, branch)
+  //       break;
+  //     case 'stuname':
+  //       res = await this
+  //       .model('stubranch')
+  //       .selectByStuname(message, branch)
+  //       break;
+  //   }
+  //   this.json({
+  //     status: 200,
+  //     persons: res
+  //   })
+  // }
   /**
   *作业发布
   title:作业名
@@ -138,10 +191,10 @@ export default class extends Base {
   branch: await session('managerId') 部门id
   */
   async publishWork(partern) {
-    let title = 'DADA';
-    let expain = 'DADA';
-    let time = 23131;
-    let branch = 1;
+    let title = partern.post.title;
+    let expain = partern.post.expain;
+    let time = partern.post.time;
+    let branch = await session('managerId');
     let state = await this.model('homework').addDoc({
       hw_title: name,
       hw_detail: explain,
@@ -198,5 +251,7 @@ export default class extends Base {
     }
   }
 
-
+  async uploadCourseWare(){
+    
+  }
 }

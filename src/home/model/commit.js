@@ -24,6 +24,9 @@ export default class extends think.model.relation {
 
 
     async check(_where) {
-        return await this.where(_where).field('stu_id,hw_time,hw_score').select();
+        return await this
+        .where(_where)
+        .field('stu_id,hw_time,hw_score')
+        .select();
     }
 }

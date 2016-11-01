@@ -20,12 +20,28 @@ export default class extends think.model.relation {
         model: 'student', //关联模型
         key: 'stu_id',//本模型的关联字段
         fKey: 'id',//被关联模型（作为附属表）的对应关联字段  stu_id == id
-        field: 'id,stu_name,stu_academy' //附属表查询的字段 注：关联字段必须查询
+        field: 'id, stu_num, stu_name, stu_academy' //附属表查询的字段 注：关联字段必须查询
       }
     };
    
-    async allPerson(_where) {
-      return await this.where(_where).field('sb_score,sb_commit,stu_id').select();
+    async allPerson(config) {
+      const perPage = 15 
+      let _where = {
+         b_id: config.b_id,
+      }
+      let order = ''
+      if(config.type == 'up')
+        order = 'sb_score'
+      else
+        order = 'sb_score desc'
+      return {
+        pageMessage : await this
+        .where(_where)
+        .field('sb_score,sb_commit,stu_id')
+        .order(order)
+        .page(config.page, perPage)
+        .countSelect(),
+      }
     }
 
     async updateScore(_where,_update) {
@@ -39,5 +55,4 @@ export default class extends think.model.relation {
     async isNull(_where) {
       return await this.where(_where).select();
     }
-
 }

@@ -24,6 +24,39 @@ export default class extends Base {
 		await this.dispatch(role, action, parterns)
 	}
 
+	 async filter(role, action){
+		 let is_pass = false
+		 if(action == 'login')
+		 	return
+		 switch (role) {
+			 case 'student':
+				 if(!await session('stunum'))
+				 	this.json({
+						'status': 400,
+						'message': '请先登录'	 
+				 	})
+				 else
+				 	is_pass = true
+				 break;
+			 case 'manager':
+			 	 if(!await session('managerId'))
+				 this.json({
+						'status': 400,
+						'message': '请先登录'	 
+				 })
+				 else
+				 	is_pass = true
+			 	 break;
+			 default:
+				 this.json({
+						'status': 400,
+						'message': '没有该角色'	 
+				 })
+				 break;
+		 }
+		 return is_pass
+	 }
+
   getPath(){
 		return {
 			role: this.get().role || null,
@@ -31,26 +64,27 @@ export default class extends Base {
 		}
 	}
 
-	getParterns(){
-		let res = {}
-		for(let item in this.get()){
-			if(item == 'role' || item == 'action')
-				continue
-			res[item] = this.get()[item]
-		}
-		return res
+  getParterns(){
+	let res = {}
+	for(let item in this.get()){
+		if(item == 'role' || item == 'action')
+			continue
+		res[item] = this.get()[item]
 	}
+	return res
+  }
 
   postParterns(){
 		return this.post()
-	}
+  }
 
-	async dispatch(role, action, parterns){
-		if(!role || !action)
-		  return this.json({
-				status: 400,
-				message: "参数不足"
-			})
-		await this.controller(role, 'home')[action](parterns)
-	}
+  async dispatch(role, action, parterns){
+	if(!role || !action)
+	  return this.json({
+		status: 400,
+		message: "参数不足"
+	  })
+	  await this.controller(role, 'home')[action](parterns)
+  }
+  
 }
