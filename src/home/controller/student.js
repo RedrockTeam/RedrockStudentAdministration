@@ -5,13 +5,27 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
+  creatRedisCilent(){
+    let	_redis = new  redis.createClient();
+		_redis.on("error", function (err) {
+				console.log("Error " + err);
+		});
+    return _redis
+  }
 
 /** 
  * 登录方法，
- * stunum password
- * session设置学号
+ * input:{
+ *    stunum//学号
+ *    password//
+ * }
+ * return{
+ *    status: 200
+ *    message: 信息
+ *    stubase: 该学生所有信息
+ * }
+ * session设置学号与学生id //学号主要用于上传用，普通逻辑用于其他业务
  */
-
   async login(partern){
     let stunum = partern.post.stunum || null,
         password = partern.post.password || null
@@ -20,41 +34,50 @@ export default class extends Base {
       status: 400,
       message: "参数不足"
     })
-    let res = await this
+    let id = await this
     .model('student')
-    .where({
+    .selectId({
       stu_num: stunum,
       stu_password: password
     })
-    .select()
-    if(!res.length){
+    if(!id.length){
       return this.json({
         status: 400,
         message: "用户名密码不正确"
       })
-    }else{
+    }else{   
+      let stuBase = await this
+          .model('student')
+          .getStuMessageById(id[0].id)
       await this.session('stunum', stunum)
+      await this.session('id', id[0].id)
+      await this.session('stubase', stuBase)
       return this.json({
         status: 200,
-        message: "登陆成功"
+        message: "登陆成功",
+        stuBase: stuBase
       })
     }
   }
 /**	
  * 上传接口
- * partern{
- *    fileName: 文件名
- *    filePath: tmp文件路径
- *    fileTime: 上传文件次数
- *    realpath: www/upload/学号/部门/文件名
+ * input post{
+ *    fileName: 分片的文件名(要与次数有关比如 peace1 peace2 peace3)每个分片的文件名不同
+ *    fileTime: 分片的第几次
+ *    hw_id: 作业的id在查看作业记录的返回信息里有
+ *    branch: 作业对应的部门名字
+ *    complete: true/false 标志是否已经上传完毕（是否为分片的最后一个文件）
  * }
+ * return json{
+ *    status: 200
+ *    complete: 文件是否已经全部上传完毕 
+ * }
+ *    
  */
   async upload(partern){
-    await this.session('stunum', 2014213898)
-		let	_redis = new  redis.createClient();
-		_redis.on("error", function (err) {
-				console.log("Error " + err);
-		});
+    await this.session('stunum', 2014213897)
+    await this.session('id', 1)
+		let	_redis = this.creatRedisCilent()
 		let fileMessage = partern.post,
 				stunum = await this.session('stunum'),
 				fileName = fileMessage.fileName,
@@ -80,11 +103,12 @@ export default class extends Base {
         stunum: stunum,
         hw_id: hw_id
       }))
+      this.pushIntoQueue(_redis, stunum, uploadPath)
       let res = await this
       .model('student')
       .commitHomework({
         hw_id: hw_id,
-        stu_id: stunum,
+        stu_id: await this.session('id'),
         hw_time: think.datetime(),
         hw_score: 0,
         cm_place: uploadPath + '/' + hw_id
@@ -109,33 +133,79 @@ export default class extends Base {
       complete: false,
     });
   }
+  /**
+   * 域是connectQueue
+   * name: stunum
+   * value: uploadpath
+   */
+  pushIntoQueue(_redis, stunum, uploadPath){
+    const key = 'connectQueue'
+    return _redis.hset(key, stunum, uploadPath)
+  }
 
-	readFilePromise(path){
-		return new Promise((resolve, reject) => {
-			fs.readFile(path, (err, chunk)=>{
-				if(err)
-					return reject(err)
-					resolve(chunk)
-			})
-		})
-	}
 /**
- * 文件分片拼接任务队列
+ * 文件分片拼接
+ * 先便利queue队列,把待处理的学号拿出来,
+ * 将每一个学号对应交给connectByStunum方法处理
+ * 进入下一次循环
  */
-	async task(){
-		let	_redis = new redis.createClient();
-		_redis.hgetall("2014213898", (err, res) => {
-			let content = [],
-          message = {}
-			for(let i in res){
-				if(i == "complete") continue
-        if(i == "message"){
-          message = JSON.parse(res[i])
-          continue
+  checkPromise(_redis, key){
+    return new Promise((resolve, reject) => {
+      _redis.hgetall(key, (err, res) => {
+        resolve(res)
+      })
+    })
+  }
+
+  taskAction(){
+    const key = 'connectQueue'
+    let	_redis = new redis.createClient();
+    this
+    .checkPromise(_redis, key)
+    .then(res => {
+      if(res == null){
+        console.log(res)
+        return setTimeout(()=>{this.taskAction()}, 20000)
+      }
+      let promiseArr = []
+      for(let i in res){
+        promiseArr.push(this.connectByStunum(_redis, i))
+      }
+      Promise.all(promiseArr)
+      .then((keys) => {
+        for(let i = 0; i < keys.length; i++){
+          this.pop(keys[i], _redis)
         }
-				content[parseInt(i)] = this.readFilePromise(res[i]);
-			}
-			Promise.all(content)
+        console.log(keys)
+        setTimeout(()=>{this.taskAction()}, 20000)
+        return this.success()
+      })
+    })
+    .catch(err => {console.log(err)})
+  }
+  pop(stunum, _redis){
+    const key = 'connectQueue'
+    _redis.hdel(key, stunum)
+  }
+	connectByStunum(_redis, key){
+    return new Promise((resolve, reject)=>{
+      _redis.hgetall(key, (err, res) => {
+        let content = [],
+            message = {}
+        for(let i in res){
+          if(i == "complete") continue
+          if(i == "message"){
+            message = JSON.parse(res[i])
+            continue
+          }
+          content[parseInt(i)] = this.readFilePromise(res[i]);
+        }
+        return this.connect(_redis, content, message, resolve, key)
+      })
+    })
+	}
+  connect(_redis, content, message, resolve, key){
+    return Promise.all(content)
 			.then((fileArr) => {
 				let completeFile = Buffer.concat(fileArr)
         return think.rmdir(`${message.savePath}`, true)
@@ -143,7 +213,7 @@ export default class extends Base {
           this.makedir(`${message.savePath}`);
           fs.writeFile(`${message.savePath}/${message.hw_id}.zip`, completeFile, () => {
             _redis.del(message.stunum)
-            this.success();
+            resolve(key)
           })
         }).catch(err => {
           console.log(err)
@@ -152,10 +222,121 @@ export default class extends Base {
 			.catch(err => {
 				console.log(err)
 			})
+  }
+  readFilePromise(path){
+		return new Promise((resolve, reject) => {
+			fs.readFile(path, (err, chunk)=>{
+				if(err)
+					return reject(err)
+					resolve(chunk)
+			})
 		})
 	}
   makedir(path){
     think.mkdir(path)
     think.chmod(path)
   }
+  /**
+   * 通过学号获取对应类型的作业列表
+   * input: get{
+   *    id: 学生id
+   *    type:{ 
+   *        0 => 未完成
+   *        1 => 已完成
+   *        2 => 已过期
+   *    }
+   * }
+   * return json{
+   *     status: 200,
+   *     homeworks: 所有作业记录 
+   * }
+   */
+  async getHomeWorkById(partern){
+    let id = partern.get.id,
+        type = partern.get.type || 0
+    if(!id) return this.json({
+      status: 400,
+      message: "参数不足"
+    })
+    let res;
+    switch (type) {
+      case "0":
+        res = await this
+        .model('student')
+        .getUnfinsh(id)
+        break;
+      case "1":
+        res = await this
+        .model('student')
+        .getFinsh(id)
+        break;
+      case "2":
+        res = await this
+        .model('student')
+        .getTimeout(id)
+        break;
+    }
+    return this.json({
+      status: 200,
+      homeworks: res
+    })
+  }
+
+  /**
+   * 课件资料数据接口
+   * input get{
+   *    b_id: 部门的id
+   * }
+   * return: json{
+   *    status: 200,
+   *    message: 'ok',
+   *    courseWare: 对应部门的所有课件资料
+   * }
+   */
+   getCourseWare(partern){
+    let b_id = partern.get.b_id,
+    _redis = this.creatRedisCilent()
+    this
+    .getCourseWareCache(_redis, b_id)
+    .then((courseWare) => {
+      if(!courseWare){
+        let data = this
+        .model('student')
+        .getCourseWare(b_id)
+        .then((data) => {
+          this.setCacheWare(_redis, b_id, JSON.stringify(data))
+          this.json({
+            status: 200,
+            message: 'ok',
+            courseWare: data
+          })
+        })
+      }else{
+        this.json({
+            status: 200,
+            message: 'ok',
+            courseWare: courseWare
+        })
+        _redis.quit()
+      }
+    })
+    .catch(err => {
+      throw new Error(err)
+    })
+  }
+  setCacheWare(_redis, id, data){
+    const key = 'courseWare'
+    _redis.hset(key, id, data)
+    _redis.quit()
+  }
+  getCourseWareCache(_redis, id){
+    const key = 'courseWare'
+    return new Promise((resolve, reject) => {
+      _redis.hget(key, id, (err, chunk)=>{
+        if(err) return console.log(err)
+        resolve(chunk)
+      })
+    })
+  }
+  
 }
