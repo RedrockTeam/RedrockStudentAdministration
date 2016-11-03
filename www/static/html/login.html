@@ -43,12 +43,35 @@
 <compont>
     <div class="login-container">
         <form class="form-signin">
-            <input type="text" class="input-block-level" placeholder="学号">
-            <input type="password" class="input-block-level" placeholder="身份证后6位">
-            <button class="btn btn-large btn-primary login-btn" type="submit">登陆</button>
+            <input type="text" class="input-block-level" id="userName" placeholder="学号">
+            <input type="password" class="input-block-level" id="passWord" placeholder="身份证后6位">
+            <button id="loginBtn" class="btn btn-large btn-primary login-btn" type="submit">登陆</button>
       </form>
     </div>
     <script>
-        
+        var userInput = $('#userName'),
+            passWord = $('#passWord');
+        var stuLoginUr = '/home/index/route?role=student&action=login',
+            managerLoginUrl = '/home/index/route?role=manager&action=login';
+
+        $('#loginBtn').on('click', function (e) {
+            e.preventDefault();
+        });
+
+        function login () {
+            var userName = userInput.val(),
+                passWord = passWord.val();
+            var url = userName.length === 3 ? managerLoginUrl : stuLoginUr;
+            $.post(url, {
+                userName: userName,
+                passWord: passWord
+            }).then(function (res) {
+                if (res.role === 0) {
+                    app.redirect('', '/trainee');
+                } else {
+                    app.redirect('', '/teacher');
+                }
+            });
+        }
     </script>
 </compont>

@@ -1,5 +1,5 @@
 ;(function () {
-    //  跟路径 (必须有)
+    //  根路径 (必须有)
     var rootLocation = setRootLocation('');
     var prvLocation = null;
     var nowLocation = window.location.href;

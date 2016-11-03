@@ -59,27 +59,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="warning">
-                            <td>
-                                1
-                            </td>
-                            <td>
-                                TB - Monthly
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                Default
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-default submit-work">提交</button>
-                            </td>
-                        </tr>
-
+                        {{#unfinished}}
+                            <tr class="warning">
+                                <td>
+                                    {{ department }}
+                                </td>
+                                <td>
+                                    {{ title }}
+                                </td>
+                                <td>
+                                    {{ desc }}
+                                </td>
+                                <td>
+                                    {{ startTime }}
+                                </td>
+                                <td>
+                                    {{ endTime }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default submit-work">提交</button>
+                                </td>
+                            </tr>
+                        {{/unfinished}}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -133,27 +134,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="success">
-                            <td>
-                                1
-                            </td>
-                            <td>
-                                TB - Monthly
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                Default
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-default submit-work">重新提交</button>
-                            </td>
-                        </tr>
-                        
+                        {{#finished}}
+                            <tr class="success">
+                                <td>
+                                    {{ department }}
+                                </td>
+                                <td>
+                                    {{ title }}
+                                </td>
+                                <td>
+                                    {{ desc }}
+                                </td>
+                                <td>
+                                    {{ startTime }}
+                                </td>
+                                <td>
+                                    {{ endTime }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default submit-work">提交</button>
+                                </td>
+                            </tr>
+                        {{/finished}}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -204,24 +206,25 @@
                         </tr>
                     </thead>
                     <tbody>
+                    {{#expired}}
                         <tr class="error">
                             <td>
-                                1
+                                {{ department }}
                             </td>
                             <td>
-                                TB - Monthly
+                                {{ title }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ desc }}
                             </td>
                             <td>
-                                Default
+                                {{ startTime }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ endTime }}
                             </td>
                         </tr>
-                        
+                    {{/expired}}
                     </tbody>
                 </table>
                 <div class="pagination">

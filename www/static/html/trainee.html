@@ -37,17 +37,45 @@
             }
             traineeIndexRouter.route('/my_inf', function (next) {
                 changeActiveTarget(infLink.parentNode);
-                this.render('/static/html/trainee_inf.html', traineeWorkApp)
+                $.get('./')
+                    .then(function (res) {
+                        return this.render('/static/html/trainee_inf.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                userName: '梁宸',
+                                userRole: '学员',
+                                userAcademy: '软件工程学院',
+                                userStuId: 2014214054,
+                                userDepartment: 'WEB研发部'
+                            }
+                        });
+                    }.bind(this))
                     .then(function () {
                         next();
                     });
             });
             traineeIndexRouter.route('/my_work', function (next) {
                 changeActiveTarget(workLink.parentNode);
-                this.render('/static/html/trainee_work.html', traineeWorkApp)
+                $.get('./')
+                    .then(function (res) {
+                        return this.render('/static/html/trainee_work.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                unfinished: [{
+                                    department: 'WEB研发部',
+                                    title: 'PSD切图',
+                                    desc: '拿一个PSD来切图',
+                                    startTime: '2016.09.05',
+                                    endTime: '2016.10.10',
+                                }],
+                                finished: [],
+                                expired: []
+                            }
+                        })
+                    }.bind(this))
                     .then(function () {
                         next();
-                    });
+                    })
             });
             traineeIndexRouter.route('/my_lesson', function (next) {
                 changeActiveTarget(lessonLink.parentNode);
@@ -60,5 +88,6 @@
             app.capture(workLink);
             app.capture(lessonLink);
         }());
+        var arr = [];
     </script>
 </compont> 
