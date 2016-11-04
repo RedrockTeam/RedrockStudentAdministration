@@ -117,7 +117,8 @@ export default class extends Base {
   async changeScore(partern) {
     let score = partern.post.score;
     let id = partern.post.stu_id;
-    let state = await this.model('stubranch')
+    let state = await this
+    .model('stubranch')
     .updateScore({
       b_id: await this.session('managerId'), 
       stu_id: id
@@ -156,33 +157,55 @@ export default class extends Base {
       this._json(200,'删除成功');
     }
   }
-  // async selectStudent(partern){
-  //   let message = partern.get.message,
-  //       type    = partern.get.type,
-  //       branch  = session('managerId'),
-  //       res = []
-  //   switch (type) {
-  //     case 'stunum':
-  //       res = await this
-  //       .model('stubranch')
-  //       .selectByStunum(message, branch)
-  //       break;
-  //     case 'academy':
-  //       res = await this
-  //       .model('stubranch')
-  //       .selectByAcademy(message, branch)
-  //       break;
-  //     case 'stuname':
-  //       res = await this
-  //       .model('stubranch')
-  //       .selectByStuname(message, branch)
-  //       break;
-  //   }
-  //   this.json({
-  //     status: 200,
-  //     persons: res
-  //   })
-  // }
+
+  /**
+   * 学生查询
+   * message = partern.get.message, 查询信息
+      type    = partern.get.type, 查询方式 学号/学院/姓名
+      branch  = await session('managerId'), 部门ID
+      sort    = partern.get.sort || 'up' 排序方式
+   *return
+    {
+      "status": 200,
+      "persons": [
+        {
+          "sb_score": 91,
+          "stu_num": "2345655768",
+          "stu_name": "陈",
+          "stu_academy": "通信",
+          "id": 1
+        }
+      ]
+    }
+   */
+  async selectStudent(partern){
+    let message = partern.get.message,
+        type    = partern.get.type,
+        branch  = 1,
+        sort    = partern.get.sort || 'up',
+        res = []
+    switch (type) {
+      case 'stunum':
+        res = await this
+        .model('stubranch')
+        .selectByStunum(message, branch,sort)
+        break;
+      case 'academy':
+        res = await this
+        .model('stubranch')
+        .selectByAcademy(message, branch,sort)
+        break;
+      case 'stuname':
+        res = await this
+        .model('stubranch')
+        .selectByStuname(message, branch,sort)
+        break;
+    }
+    this.json({
+      status: 200,
+      persons: res
+    })
+  }
   /**
   *作业发布
   title:作业名

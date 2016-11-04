@@ -55,4 +55,47 @@ export default class extends think.model.relation {
     async isNull(_where) {
       return await this.where(_where).select();
     }
+
+    async selectByStunum(message,branch,sort) {
+      if(sort == 'up') {
+        sort = 'ASC';
+      }
+      if(sort == 'down') {
+        sort = 'DESC';
+      }
+      let sql = `select sb_score,stu_num,stu_name,stu_academy,student.id 
+      FROM student,stubranch 
+      WHERE student.stu_num = "${message}" AND student.id = stubranch.stu_id AND stubranch.b_id = "${branch}" ORDER BY sb_score ${sort}`,
+          data = await this.query(sql);
+      return data;
+
+    }
+     async selectByAcademy(message,branch,sort) {
+      if(sort == 'up') {
+        sort = 'ASC';
+      }
+      if(sort == 'down') {
+        sort = 'DESC';
+      }
+      let sql = `select sb_score,stu_num,stu_name,stu_academy,student.id 
+      FROM student,stubranch 
+      WHERE student.stu_academy = "${message}" AND student.id = stubranch.stu_id AND stubranch.b_id = "${branch}" ORDER BY sb_score ${sort}`,
+          data = await this.query(sql);
+      return data;
+
+    }
+     async selectByStuname(message,branch,sort) {
+      if(sort == 'up') {
+        sort = 'ASC';
+      }
+      if(sort == 'down') {
+        sort = 'DESC';
+      }
+      let sql = `select sb_score,stu_num,stu_name,stu_academy,student.id 
+      FROM student,stubranch 
+      WHERE student.stu_name = "${message}" AND student.id = stubranch.stu_id AND stubranch.b_id = "${branch}" ORDER BY sb_score ${sort}`,
+          data = await this.query(sql);
+      return data;
+
+    }
 }
