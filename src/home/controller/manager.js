@@ -144,14 +144,33 @@ export default class extends Base {
     let state = await this
     .model('stubranch')
     .delStu({b_id: branch, stu_id: id});
-    let isNull = await this
-    .model('stubranch')
-    .isNull({stu_id: id});
-    if(think.isEmpty(isNull)) {
-      //删除所有记录
-      //的步骤！
-    }
+    // let isNull = await this
+    // .model('stubranch')
+    // .isNull({stu_id: id});
+    // if(think.isEmpty(isNull)) {
+    //   //删除所有记录
+    //   //的步骤！
+    // }
     if(state === 0) {
+      this._json(400,'删除失败');
+    } else {
+      this._json(200,'删除成功');
+    }
+  }
+
+
+  /**
+   * 批量踢人
+   */
+  async delAll(partern) {
+        branch  = await this.session('managerId',1);
+    let branch = await this.session('managerId');
+    let id = partern.get.stu_id;
+    id.foreach(async (e) => {
+      let state = await this.model('stubranch').delStu({b_id: branch, stu_id: e});
+      if(!state) break;
+    });
+     if(!state) {
       this._json(400,'删除失败');
     } else {
       this._json(200,'删除成功');
@@ -181,7 +200,7 @@ export default class extends Base {
   async selectStudent(partern){
     let message = partern.get.message,
         type    = partern.get.type,
-        branch  = 1,
+        branch  = await this.session('managerId'),
         sort    = partern.get.sort || 'up',
         res = []
     switch (type) {
@@ -260,15 +279,34 @@ export default class extends Base {
       });
   }
   /**
-  *查看作业 已上交
+  *查看作业 已未上交
+  * partern.get.state 是否上交状态
   hwId 作业id
   return:{stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
+  [
+    {
+      "stu_name": "九",
+      "stu_num": "1214141",
+      "id": 2,
+      "sb_commit": "8"
+    },
+    {
+      "allhw": 1
+    }
+  ]
   */
   async checkhw(partern) {
-    let hwId;
-    let check = await this.model('commit').check({hw_id: hwId});
+    await this.session('managerId',1);
+    let b_id = await this.session('managerId'),
+        hwId = partern.get.hw_id,
+        state = partern.get.state || 'already',
+        check = await this.model('commit').check({hw_id: hwId},state,b_id);
+        console.log(b_id);
+    if(state != 'already') {
+      console.log(check)
+    }
     if(think.isEmpty(check)) {
-      return this._json(400,'查看作业失败');
+      return this._json(400,'无记录');
     } else {
       return this._json(200,check);
     }
