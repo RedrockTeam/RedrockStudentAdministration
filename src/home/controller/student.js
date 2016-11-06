@@ -5,14 +5,6 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
-  creatRedisCilent(){
-    let	_redis = new  redis.createClient();
-		_redis.on("error", function (err) {
-				console.log("Error " + err);
-		});
-    return _redis
-  }
-
 /** 
  * 登录方法，
  * input:{
@@ -320,5 +312,4 @@ export default class extends Base {
       throw new Error(err)
     })
   }
-  
 }
