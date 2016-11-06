@@ -232,10 +232,6 @@ export default class extends Base {
 			})
 		})
 	}
-  makedir(path){
-    think.mkdir(path)
-    think.chmod(path)
-  }
   /**
    * 通过学号获取对应类型的作业列表
    * input: get{
@@ -322,20 +318,6 @@ export default class extends Base {
     })
     .catch(err => {
       throw new Error(err)
-    })
-  }
-  setCacheWare(_redis, id, data){
-    const key = 'courseWare'
-    _redis.hset(key, id, data)
-    _redis.quit()
-  }
-  getCourseWareCache(_redis, id){
-    const key = 'courseWare'
-    return new Promise((resolve, reject) => {
-      _redis.hget(key, id, (err, chunk)=>{
-        if(err) return console.log(err)
-        resolve(chunk)
-      })
     })
   }
   

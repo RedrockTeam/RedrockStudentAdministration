@@ -1,8 +1,9 @@
-'use strict';
+'use strict'
 import Base from './base.js'
-import fs from 'fs';
-import unzip from 'unzip';
+import fs from 'fs'
+import unzip from 'unzip'
 import {res} from '../../common/function.js'
+import redis from 'redis'
 
 export default class extends Base {
   _json(status,message) {
@@ -162,20 +163,20 @@ export default class extends Base {
   /**
    * 批量踢人
    */
-  async delAll(partern) {
-        branch  = await this.session('managerId',1);
-    let branch = await this.session('managerId');
-    let id = partern.get.stu_id;
-    id.foreach(async (e) => {
-      let state = await this.model('stubranch').delStu({b_id: branch, stu_id: e});
-      if(!state) break;
-    });
-     if(!state) {
-      this._json(400,'删除失败');
-    } else {
-      this._json(200,'删除成功');
-    }
-  }
+  // async delAll(partern) {
+  //       branch  = await this.session('managerId',1);
+  //   let branch = await this.session('managerId');
+  //   let id = partern.get.stu_id;
+  //   id.foreach(async (e) => {
+  //     let state = await this.model('stubranch').delStu({b_id: branch, stu_id: e});
+  //     if(!state) break;
+  //   });
+  //    if(!state) {
+  //     this._json(400,'删除失败');
+  //   } else {
+  //     this._json(200,'删除成功');
+  //   }
+  // }
 
   /**
    * 学生查询
@@ -311,8 +312,55 @@ export default class extends Base {
       return this._json(200,check);
     }
   }
+  /** 
+   * input{
+   *   id: 课件id
+   * }
+   * return json{
+   *  status: 200/400
+   *  message
+   * }
+   */
+  async delCourseWare(partern){
+    let res = await this
+    .model('courseware')
+    .del(partern.get.id)
+    let message = {}
+    if(!res){
+      message = {
+        status: 200,
+        message: 'ok'
+      }
+    }else{
+      message = {
+        status: 200,
+        message: "出了点问题"
+      }
+    }
+    return this.json(message)
+  }
+  /**
+   * input:formdata{
+   *   file: 课件文件 文件类型待定(暂支持zip)
+   *   title: 课件标题
+   *   descript: 课件描述 
+   *   name: 课件名称
+   * }
+   */
+  async uploadCourseWare(partern){
+    //获取信息
+    let _redis = this.creatRedisCilent(),
+        b_id   = await this.session('managerId'),
+        savePath = `${think.RESOURCE_PATH}/courseware/${b_id}/${title}.zip`,
+        title = partern.post.title,
+        descript = partern.post.discrpit,
+        file = this.file(partern.post.name)
+      
+    //文件写入
+    
+    //数据库记录
 
-  async uploadCourseWare(){
+    //跟新缓存
     
   }
 }
