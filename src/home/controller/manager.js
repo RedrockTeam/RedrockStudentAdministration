@@ -1,8 +1,9 @@
-'use strict';
+'use strict'
 import Base from './base.js'
-import fs from 'fs';
-import unzip from 'unzip';
+import fs from 'fs'
+import unzip from 'unzip'
 import {res} from '../../common/function.js'
+import redis from 'redis'
 
 export default class extends Base {
   _json(status,message) {
@@ -117,7 +118,8 @@ export default class extends Base {
   async changeScore(partern) {
     let score = partern.post.score;
     let id = partern.post.stu_id;
-    let state = await this.model('stubranch')
+    let state = await this
+    .model('stubranch')
     .updateScore({
       b_id: await this.session('managerId'), 
       stu_id: id
@@ -143,46 +145,87 @@ export default class extends Base {
     let state = await this
     .model('stubranch')
     .delStu({b_id: branch, stu_id: id});
-    let isNull = await this
-    .model('stubranch')
-    .isNull({stu_id: id});
-    if(think.isEmpty(isNull)) {
-      //删除所有记录
-      //的步骤！
-    }
+    // let isNull = await this
+    // .model('stubranch')
+    // .isNull({stu_id: id});
+    // if(think.isEmpty(isNull)) {
+    //   //删除所有记录
+    //   //的步骤！
+    // }
     if(state === 0) {
       this._json(400,'删除失败');
     } else {
       this._json(200,'删除成功');
     }
   }
-  // async selectStudent(partern){
-  //   let message = partern.get.message,
-  //       type    = partern.get.type,
-  //       branch  = session('managerId'),
-  //       res = []
-  //   switch (type) {
-  //     case 'stunum':
-  //       res = await this
-  //       .model('stubranch')
-  //       .selectByStunum(message, branch)
-  //       break;
-  //     case 'academy':
-  //       res = await this
-  //       .model('stubranch')
-  //       .selectByAcademy(message, branch)
-  //       break;
-  //     case 'stuname':
-  //       res = await this
-  //       .model('stubranch')
-  //       .selectByStuname(message, branch)
-  //       break;
+
+
+  /**
+   * 批量踢人
+   */
+  // async delAll(partern) {
+  //       branch  = await this.session('managerId',1);
+  //   let branch = await this.session('managerId');
+  //   let id = partern.get.stu_id;
+  //   id.foreach(async (e) => {
+  //     let state = await this.model('stubranch').delStu({b_id: branch, stu_id: e});
+  //     if(!state) break;
+  //   });
+  //    if(!state) {
+  //     this._json(400,'删除失败');
+  //   } else {
+  //     this._json(200,'删除成功');
   //   }
-  //   this.json({
-  //     status: 200,
-  //     persons: res
-  //   })
   // }
+
+  /**
+   * 学生查询
+   * message = partern.get.message, 查询信息
+      type    = partern.get.type, 查询方式 学号/学院/姓名
+      branch  = await session('managerId'), 部门ID
+      sort    = partern.get.sort || 'up' 排序方式
+   *return
+    {
+      "status": 200,
+      "persons": [
+        {
+          "sb_score": 91,
+          "stu_num": "2345655768",
+          "stu_name": "陈",
+          "stu_academy": "通信",
+          "id": 1
+        }
+      ]
+    }
+   */
+  async selectStudent(partern){
+    let message = partern.get.message,
+        type    = partern.get.type,
+        branch  = await this.session('managerId'),
+        sort    = partern.get.sort || 'up',
+        res = []
+    switch (type) {
+      case 'stunum':
+        res = await this
+        .model('stubranch')
+        .selectByStunum(message, branch,sort)
+        break;
+      case 'academy':
+        res = await this
+        .model('stubranch')
+        .selectByAcademy(message, branch,sort)
+        break;
+      case 'stuname':
+        res = await this
+        .model('stubranch')
+        .selectByStuname(message, branch,sort)
+        break;
+    }
+    this.json({
+      status: 200,
+      persons: res
+    })
+  }
   /**
   *作业发布
   title:作业名
@@ -237,21 +280,87 @@ export default class extends Base {
       });
   }
   /**
-  *查看作业 已上交
+  *查看作业 已未上交
+  * partern.get.state 是否上交状态
   hwId 作业id
   return:{stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
+  [
+    {
+      "stu_name": "九",
+      "stu_num": "1214141",
+      "id": 2,
+      "sb_commit": "8"
+    },
+    {
+      "allhw": 1
+    }
+  ]
   */
   async checkhw(partern) {
-    let hwId;
-    let check = await this.model('commit').check({hw_id: hwId});
+    await this.session('managerId',1);
+    let b_id = await this.session('managerId'),
+        hwId = partern.get.hw_id,
+        state = partern.get.state || 'already',
+        check = await this.model('commit').check({hw_id: hwId},state,b_id);
+        console.log(b_id);
+    if(state != 'already') {
+      console.log(check)
+    }
     if(think.isEmpty(check)) {
-      return this._json(400,'查看作业失败');
+      return this._json(400,'无记录');
     } else {
       return this._json(200,check);
     }
   }
+  /** 
+   * input{
+   *   id: 课件id
+   * }
+   * return json{
+   *  status: 200/400
+   *  message
+   * }
+   */
+  async delCourseWare(partern){
+    let res = await this
+    .model('courseware')
+    .del(partern.get.id)
+    let message = {}
+    if(!res){
+      message = {
+        status: 200,
+        message: 'ok'
+      }
+    }else{
+      message = {
+        status: 200,
+        message: "出了点问题"
+      }
+    }
+    return this.json(message)
+  }
+  /**
+   * input:formdata{
+   *   file: 课件文件 文件类型待定(暂支持zip)
+   *   title: 课件标题
+   *   descript: 课件描述 
+   *   name: 课件名称
+   * }
+   */
+  async uploadCourseWare(partern){
+    //获取信息
+    let _redis = this.creatRedisCilent(),
+        b_id   = await this.session('managerId'),
+        savePath = `${think.RESOURCE_PATH}/courseware/${b_id}/${title}.zip`,
+        title = partern.post.title,
+        descript = partern.post.discrpit,
+        file = this.file(partern.post.name)
+      
+    //文件写入
+    
+    //数据库记录
 
-  async uploadCourseWare(){
+    //跟新缓存
     
   }
 }
