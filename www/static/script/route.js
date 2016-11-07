@@ -233,8 +233,7 @@
     BrowserHistory.prototype.push = function (data, href) {
         href = rootLocation.replace(/^https?:\/\/.+?\//, '/') + resolveRoutePath(href);
         prvLocation = window.location.href;
-        if (nowLocation === href) return;
-        console.log(href);
+        if (nowLocation.replace(/^https?:\/\/.+?\//, '/') === href) return;
         this.history.pushState(data, '', href);
         this._match(prvLocation);
         nowLocation = window.location.href;

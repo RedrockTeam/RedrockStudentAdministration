@@ -240,11 +240,6 @@ export default class extends Base {
    * 通过学号获取对应类型的作业列表
    * input: get{
    *    id: 学生id
-   *    type:{ 
-   *        0 => 未完成
-   *        1 => 已完成
-   *        2 => 已过期
-   *    }
    * }
    * return json{
    *     status: 200,
@@ -252,30 +247,25 @@ export default class extends Base {
    * }
    */
   async getHomeWorkById(partern){
-    let id = partern.get.id,
-        type = partern.get.type || 0
+    let id = partern.get.id
     if(!id) return this.json({
       status: 400,
       message: "参数不足"
     })
-    let res;
-    switch (type) {
-      case "0":
-        res = await this
-        .model('student')
-        .getUnfinsh(id)
-        break;
-      case "1":
-        res = await this
-        .model('student')
-        .getFinsh(id)
-        break;
-      case "2":
-        res = await this
-        .model('student')
-        .getTimeout(id)
-        break;
+    let res = {
+      unfinished: null,
+      finished: null,
+      expired: null
     }
+    res.unfinished = await this
+      .model('student')
+      .getUnfinsh(id)
+    res.finished = await this
+      .model('student')
+      .getFinsh(id)
+    res.expired = await this
+      .model('student')
+      .getTimeout(id)
     return this.json({
       status: 200,
       homeworks: res

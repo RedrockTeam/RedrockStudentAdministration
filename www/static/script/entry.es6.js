@@ -5,8 +5,7 @@
     var Router = app.Router;
     var entryApp = document.getElementById('entryApp');
     var loginRouter = new Router();
-    var traineeRouter = new Router();
-    var teacherRouter = new Router();
+    var userRouter = new Router();
     var traineeIndexRouter;
     var teacherIndexRouter;
     var changeTitle = function () {
@@ -23,13 +22,20 @@
             next();
         });
     });
-    traineeIndexRouter = traineeRouter.route('/trainee', function (next) {
+    userRouter = userRouter.route('/user', function (next) {
+        if (!localStorage.getItem('userInf')) {
+            alert('请登录');
+            return app.redirect('', '/login');
+        };
+        next();
+    });
+    traineeIndexRouter = userRouter.route('/trainee', function (next) {
         changeTitle('学员主页');
         this.render('/static/html/trainee.html', entryApp).then(function () {
             next();
         });
     });
-    teacherIndexRouter = teacherRouter.route('/teacher', function (next) {
+    teacherIndexRouter = userRouter.route('/teacher', function (next) {
         changeTitle('管理员主页');
         this.render('/static/html/teacher.html', entryApp).then(function () {
             next();
@@ -45,6 +51,4 @@
 
     window.traineeIndexRouter = traineeIndexRouter;
     window.teacherIndexRouter = teacherIndexRouter;
-    // app.redirect('', '/teacher/watch_homework');
-    // app.redirect('', '/login');
 })();

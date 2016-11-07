@@ -50,28 +50,39 @@
     </div>
     <script>
         var userInput = $('#userName'),
-            passWord = $('#passWord');
+            passWordInput = $('#passWord');
         var stuLoginUr = '/home/index/route?role=student&action=login',
             managerLoginUrl = '/home/index/route?role=manager&action=login';
 
         $('#loginBtn').on('click', function (e) {
             e.preventDefault();
+            login();
         });
 
         function login () {
             var userName = userInput.val(),
-                passWord = passWord.val();
+                passWord = passWordInput.val();
             var url = userName.length === 3 ? managerLoginUrl : stuLoginUr;
             $.post(url, {
-                userName: userName,
-                passWord: passWord
+                stunum: userName,
+                password: passWord
             }).then(function (res) {
-                if (res.role === 0) {
-                    app.redirect('', '/trainee');
+                if (res.status === 200) {
+                    setUserInf(res);
+                    if (userName.length === 3) 
+                        app.redirect('', '/user/teacher');
+                    else 
+                        app.redirect('', '/user/trainee');
                 } else {
-                    app.redirect('', '/teacher');
+                    alert('账号密码错误');
                 }
             });
+        }
+
+        function setUserInf (json) {
+            if (typeof json === 'object') 
+                json = JSON.stringify(json);
+            localStorage.setItem('userInf', json);
         }
     </script>
 </compont>
