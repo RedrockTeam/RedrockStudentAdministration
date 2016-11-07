@@ -6,9 +6,12 @@ import {res} from '../../common/function.js'
 
 export default class extends Base {
   _json(status,message) {
+    if(Object.prototype.toString.call(message) != "[object String]") {
+      message = this.json(message);
+    }
     return this.json({
       status: status,
-      message: this.json(message)
+      message: message
     })
   }
   /**
@@ -163,18 +166,21 @@ export default class extends Base {
    * 批量踢人
    */
   async delAll(partern) {
-        branch  = await this.session('managerId',1);
     let branch = await this.session('managerId');
-    let id = partern.get.stu_id;
-    id.foreach(async (e) => {
-      let state = await this.model('stubranch').delStu({b_id: branch, stu_id: e});
-      if(!state) break;
-    });
-     if(!state) {
-      this._json(400,'删除失败');
-    } else {
-      this._json(200,'删除成功');
-    }
+    let id = JSON.parse(partern.get.stu_id);
+    let promise = new Promise((resolve,reject) => {
+      id.forEach((e) => {
+        resolve(e)
+      })
+    }).then((event) => {
+      return this.model('stubranch').delStu({b_id: branch, stu_id: event});
+    }).then((v) => {
+      console.log(v);
+      if(v === 0) {
+          console.log(v);
+          this._json(400,'删除失败');
+      }
+    })
   }
 
   /**
@@ -262,7 +268,7 @@ export default class extends Base {
   }
   */
   async ifEnd(partern) {
-    let branch = 1;
+    let branch = await session('managerId');
     let nowTime;
     let nhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'>' : nowTime}});
     let allNum = await this.model('stubranch').allPerson({b_id: branch}).length;
@@ -282,21 +288,26 @@ export default class extends Base {
   *查看作业 已未上交
   * partern.get.state 是否上交状态
   hwId 作业id
-  return:{stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
+  return:{id,cm_place,stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
   [
     {
-      "stu_name": "九",
-      "stu_num": "1214141",
-      "id": 2,
-      "sb_commit": "8"
-    },
-    {
-      "allhw": 1
-    }
+      {
+      id :1 
+    "stu_id": 1,
+    "hw_time": "0000-00-00 00:00:00",
+    "hw_score": null,
+    "cm_place": "重庆",
+    "student": [
+      {
+        "id": 1,
+        "stu_num": "2345655768",
+        "stu_name": "陈"
+      }
+    ]
   ]
   */
   async checkhw(partern) {
-    await this.session('managerId',1);
+   
     let b_id = await this.session('managerId'),
         hwId = partern.get.hw_id,
         state = partern.get.state || 'already',
@@ -311,8 +322,67 @@ export default class extends Base {
       return this._json(200,check);
     }
   }
+/**
+ * 下载
+ *  let id = partern.get.id  commit的ID
+   
 
-  async uploadCourseWare(){
-    
+    return
+    [
+      {
+        "cm_place": "重庆",
+        "student": []
+      }
+    ]
+ */
+  async downHw(partern){
+    let id = partern.get.id;
+    let path = await this.model('commit').getPath({id:id});
+    if(think.isEmpty(path)){
+      return this._json(400,'下载失败')
+    }else{
+       return this.json({
+         status:200,
+         message:path
+       });
+    }
+  }
+
+
+  /**作业分数修改
+   * let id = partern.get.id  commit的ID
+   * let score = partern.get.score; 分数
+   */
+  async changeHw(partern) {
+     let id = partern.get.id;
+     let score = partern.get.score;
+     let state = this
+     .model('commit')
+     .dec({id: id},{hw_score: score});
+     if(state) {
+        return this._json(200,'修改成功');
+      //   return this.json({
+      //    status:200,
+      //    message:'suceess'
+      //  });
+     } else {
+       return this._json(400,'修改失败');
+     }
+  }
+
+   /**删除学员作业
+   * let id = partern.get.id  commit的ID
+   */
+  async delHw(partern) {
+     let id = partern.get.id
+     let state = this
+     .model('commit')
+     .del({id: id});
+     if(state) {
+       return this._json(200,'删除成功');
+      
+     } else {
+       return this._json(400,'删除失败');
+     }
   }
 }
