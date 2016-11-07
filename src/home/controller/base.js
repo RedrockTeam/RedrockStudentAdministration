@@ -1,4 +1,5 @@
 'use strict';
+import redis from 'redis'
 
 export default class extends think.controller.base {
   /**

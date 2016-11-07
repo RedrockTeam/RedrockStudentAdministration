@@ -349,18 +349,40 @@ export default class extends Base {
    */
   async uploadCourseWare(partern){
     //获取信息
-    let _redis = this.creatRedisCilent(),
-        b_id   = await this.session('managerId'),
-        savePath = `${think.RESOURCE_PATH}/courseware/${b_id}/${title}.zip`,
-        title = partern.post.title,
+    let b_id     = await this.session('managerId'),
+        savePath = `${think.RESOURCE_PATH}/courseware/${b_id}`,
+        title    = partern.post.title,
         descript = partern.post.discrpit,
-        file = this.file(partern.post.name)
-      
+        file     = this.file(partern.post.name),
+        tmpath   = this.file(fileName).path
     //文件写入
-    
+    let rename = `${savePath}/${partern.post.name}` 
+    await fs.renameSync(tmpath, rename)
     //数据库记录
-
+    this
+    .model('courseware')
+    .add({
+      cw_title:  title,
+      cw_detail: descript,
+      cw_time:   think.datetime(),
+      cw_branch: b_id,
+      cw_place:  rename
+    })
+    .then((row) => {
+      if(!row)
+        return this.json({
+          status: 500,
+          message: "崩了？"
+        })
     //跟新缓存
+      let _redis = this.creatRedisCilent()
+      const key = 'courseWare'
+      _redis.hdel('courseWare', b_id)
+      return this.json({
+          status: 200,
+          message: "上传成功"
+      })
+    })
     
   }
 }

@@ -10,4 +10,9 @@ export default class extends think.model.relation {
       where: {id: id}
     })
   }
+  async add(where){
+    return await this
+    .model('courseware')
+    .add(where)
+  }
 }
