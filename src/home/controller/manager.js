@@ -168,7 +168,6 @@ export default class extends Base {
    */
 
   async delAll(partern) {
-    await this.session('managerId',1)
     let branch = await this.session('managerId');
     let id = partern.get.stu_id;
     let state = await this.model('stubranch').delStu({b_id: branch, stu_id: {'in':JSON.parse(id)}});
