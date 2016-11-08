@@ -168,23 +168,16 @@ export default class extends Base {
    */
 
   async delAll(partern) {
+    await this.session('managerId',1)
     let branch = await this.session('managerId');
-    let id = JSON.parse(partern.get.stu_id);
-    let promise = new Promise((resolve,reject) => {
-      id.forEach((e) => {
-        resolve(e)
-      })
-    }).then((event) => {
-      return this.model('stubranch').delStu({b_id: branch, stu_id: event});
-    }).then((v) => {
-      console.log(v);
-      if(v === 0) {
-        console.log(v);
-        this._json(400,'删除失败');
-      }else{
-        this._json(400,'删除成功');
-      }
-    })
+    let id = partern.get.stu_id;
+    let state = await this.model('stubranch').delStu({b_id: branch, stu_id: {'in':JSON.parse(id)}});
+    // console.log(state);
+    if(state === 0) {
+      this._json(400,'删除失败');
+    }else{
+      this._json(200,'删除成功');
+    }
   }
 
 
@@ -356,8 +349,13 @@ export default class extends Base {
     ]
  */
   async downHw(partern){
-    let id = partern.get.id;
-    let path = await this.model('commit').getPath({id:id});
+    let id = partern.get.id,
+        path;
+    if(Object.prototype.toString.call(JSON.parse(id)) === '[object Array]') {
+      path = await this.model('commit').getPath({id:{'in' : JSON.parse(id)}});
+    } else {
+      path = await this.model('commit').getPath({id:id});
+    }
     if(think.isEmpty(path)){
       return this._json(400,'下载失败')
     }else{
@@ -381,10 +379,6 @@ export default class extends Base {
      .dec({id: id},{hw_score: score});
      if(state) {
         return this._json(200,'修改成功');
-      //   return this.json({
-      //    status:200,
-      //    message:'suceess'
-      //  });
      } else {
        return this._json(400,'修改失败');
      }
@@ -397,34 +391,19 @@ export default class extends Base {
      let id = partern.get.id,
          state;
      if(Object.prototype.toString.call(JSON.parse(id)) === '[object Array]') {
-      // console.log(1)
-       let promise = new Promise((resolve,reject) => {
-        //  console.log(1)
-          JSON.parse(id).forEach((e) => {
-            resolve(e)
-          })
-        }).then((event) => {
-          return this.model('commit').del({id: event});
-        }).then((v) => {
-          console.log(v);
-          if(v === 0) {
-            console.log(v);
-            this._json(400,'删除失败');
-          }else{
-            this._json(400,'删除成功');
-          }
-        })
-    }
-    //  } else {
-    //     state = this
-    //     .model('commit')
-    //     .del({id: id});
-    //     if(state) {
-    //       return this._json(200,'删除成功');
-    //     } else {
-    //       return this._json(400,'删除失败');
-    //     }
-    //  }
+       state = await this
+        .model('commit')
+        .del({id: {'in': JSON.parse(id)}});
+     } else {
+        state = await this
+        .model('commit')
+        .del({id: id});
+     }
+     if(state) {
+        return this._json(200,'删除成功');
+      } else {
+        return this._json(400,'删除失败');
+      }
   }
   /** 
    * input{
