@@ -1,8 +1,9 @@
-'use strict';
+'use strict'
 import Base from './base.js'
-import fs from 'fs';
-import unzip from 'unzip';
+import fs from 'fs'
+import unzip from 'unzip'
 import {res} from '../../common/function.js'
+import redis from 'redis'
 
 export default class extends Base {
   _json(status,message) {
@@ -165,6 +166,7 @@ export default class extends Base {
   /**
    * 批量踢人
    */
+
   async delAll(partern) {
     let branch = await this.session('managerId');
     let id = JSON.parse(partern.get.stu_id);
@@ -182,6 +184,7 @@ export default class extends Base {
       }
     })
   }
+
 
   /**
    * 学生查询
@@ -322,6 +325,7 @@ export default class extends Base {
       return this._json(200,check);
     }
   }
+
 /**
  * 下载
  *  let id = partern.get.id  commit的ID
@@ -384,5 +388,78 @@ export default class extends Base {
      } else {
        return this._json(400,'删除失败');
      }
+  }
+  /** 
+   * input{
+   *   id: 课件id
+   * }
+   * return json{
+   *  status: 200/400
+   *  message
+   * }
+   */
+  async delCourseWare(partern){
+    let res = await this
+    .model('courseware')
+    .del(partern.get.id)
+    let message = {}
+    if(!res){
+      message = {
+        status: 200,
+        message: 'ok'
+      }
+    }else{
+      message = {
+        status: 200,
+        message: "出了点问题"
+      }
+    }
+    return this.json(message)
+  }
+  /**
+   * input:formdata{
+   *   file: 课件文件 文件类型待定(暂支持zip)
+   *   title: 课件标题
+   *   descript: 课件描述 
+   *   name: 课件名称
+   * }
+   */
+  async uploadCourseWare(partern){
+    //获取信息
+    let b_id     = await this.session('managerId'),
+        savePath = `${think.RESOURCE_PATH}/courseware/${b_id}`,
+        title    = partern.post.title,
+        descript = partern.post.discrpit,
+        file     = this.file(partern.post.name),
+        tmpath   = this.file(fileName).path
+    //文件写入
+    let rename = `${savePath}/${partern.post.name}` 
+    await fs.renameSync(tmpath, rename)
+    //数据库记录
+    this
+    .model('courseware')
+    .add({
+      cw_title:  title,
+      cw_detail: descript,
+      cw_time:   think.datetime(),
+      cw_branch: b_id,
+      cw_place:  rename
+    })
+    .then((row) => {
+      if(!row)
+        return this.json({
+          status: 500,
+          message: "崩了？"
+        })
+    //跟新缓存
+      let _redis = this.creatRedisCilent()
+      const key = 'courseWare'
+      _redis.hdel('courseWare', b_id)
+      return this.json({
+          status: 200,
+          message: "上传成功"
+      })
+    })
+
   }
 }

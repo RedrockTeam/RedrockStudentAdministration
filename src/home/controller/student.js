@@ -5,14 +5,6 @@ import redis from 'redis'
 import fs from 'fs'
 
 export default class extends Base {
-  creatRedisCilent(){
-    let	_redis = new  redis.createClient();
-		_redis.on("error", function (err) {
-				console.log("Error " + err);
-		});
-    return _redis
-  }
-
 /** 
  * 登录方法，
  * input:{
@@ -232,10 +224,6 @@ export default class extends Base {
 			})
 		})
 	}
-  makedir(path){
-    think.mkdir(path)
-    think.chmod(path)
-  }
   /**
    * 通过学号获取对应类型的作业列表
    * input: get{
@@ -324,19 +312,4 @@ export default class extends Base {
       throw new Error(err)
     })
   }
-  setCacheWare(_redis, id, data){
-    const key = 'courseWare'
-    _redis.hset(key, id, data)
-    _redis.quit()
-  }
-  getCourseWareCache(_redis, id){
-    const key = 'courseWare'
-    return new Promise((resolve, reject) => {
-      _redis.hget(key, id, (err, chunk)=>{
-        if(err) return console.log(err)
-        resolve(chunk)
-      })
-    })
-  }
-  
 }
