@@ -179,8 +179,10 @@ export default class extends Base {
     }).then((v) => {
       console.log(v);
       if(v === 0) {
-          console.log(v);
-          this._json(400,'删除失败');
+        console.log(v);
+        this._json(400,'删除失败');
+      }else{
+        this._json(400,'删除成功');
       }
     })
   }
@@ -288,7 +290,21 @@ export default class extends Base {
       });
   }
   /**
-  *查看作业 已未上交
+   * 删除发布的作业
+   * let id = partern.get.id;
+   * return 200||400
+   */
+  async del(partern) {
+    let id = partern.get.id;
+    let state = this.model('homework').del({id: id});
+    if(state) {
+       return this._json(200,'删除成功');
+     } else {
+       return this._json(400,'删除失败');
+     }
+  }
+  /**
+  *查看作业 已未上交  那啥 header从上一页自己传吧= =
   * partern.get.state 是否上交状态
   hwId 作业id
   return:{id,cm_place,stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
@@ -378,16 +394,37 @@ export default class extends Base {
    * let id = partern.get.id  commit的ID
    */
   async delHw(partern) {
-     let id = partern.get.id
-     let state = this
-     .model('commit')
-     .del({id: id});
-     if(state) {
-       return this._json(200,'删除成功');
-      
-     } else {
-       return this._json(400,'删除失败');
-     }
+     let id = partern.get.id,
+         state;
+     if(Object.prototype.toString.call(JSON.parse(id)) === '[object Array]') {
+      // console.log(1)
+       let promise = new Promise((resolve,reject) => {
+        //  console.log(1)
+          JSON.parse(id).forEach((e) => {
+            resolve(e)
+          })
+        }).then((event) => {
+          return this.model('commit').del({id: event});
+        }).then((v) => {
+          console.log(v);
+          if(v === 0) {
+            console.log(v);
+            this._json(400,'删除失败');
+          }else{
+            this._json(400,'删除成功');
+          }
+        })
+    }
+    //  } else {
+    //     state = this
+    //     .model('commit')
+    //     .del({id: id});
+    //     if(state) {
+    //       return this._json(200,'删除成功');
+    //     } else {
+    //       return this._json(400,'删除失败');
+    //     }
+    //  }
   }
   /** 
    * input{
