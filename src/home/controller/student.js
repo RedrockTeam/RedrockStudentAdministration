@@ -3,6 +3,8 @@
 import Base from './base.js'
 import redis from 'redis'
 import fs from 'fs'
+import unzip from 'unzip'
+import child from 'child_process'
 
 export default class extends Base {
 /** 
@@ -66,9 +68,24 @@ export default class extends Base {
  * }
  *    
  */
+  isEnough(obj){
+    let flag = 1;
+    ['fileName', 'fileTime', 'hw_id', 'branch']
+    .map((item, index) => {
+      if(!obj.hasOwnProperty(item))
+        flag = 0
+    })
+    return flag
+  }
   async upload(partern){
     await this.session('stunum', 2014213897)
     await this.session('id', 1)
+    if(!this.isEnough(partern.post)){
+      return this.json({
+        status: 400,
+        message: '参数不足'
+      })
+    }
 		let	_redis = this.creatRedisCilent()
 		let fileMessage = partern.post,
 				stunum = await this.session('stunum'),
@@ -202,9 +219,12 @@ export default class extends Base {
 				let completeFile = Buffer.concat(fileArr)
         return think.rmdir(`${message.savePath}`, true)
         .then(() => {
-          this.makedir(`${message.savePath}`);
-          fs.writeFile(`${message.savePath}/${message.hw_id}.zip`, completeFile, () => {
+          this.makedir(message.savePath)
+          let ziPath = `${message.savePath}/${message.hw_id}.zip`
+          fs.writeFile(ziPath, completeFile, () => {
             _redis.del(message.stunum)
+            //解压zips
+            this.free(ziPath, message.savePath)
             resolve(key)
           })
         }).catch(err => {
@@ -214,6 +234,15 @@ export default class extends Base {
 			.catch(err => {
 				console.log(err)
 			})
+  }
+  free(ziPath, savePath){
+    child.exec(`cd ${savePath} && unzip ${ziPath}`, function (error, stdout, stderr) {
+      if (error) {
+        console.log(error.stack);
+        console.log('Error code: '+error.code);
+      }
+      console.log('Child Process STDOUT: '+stdout);
+    });
   }
   readFilePromise(path){
 		return new Promise((resolve, reject) => {

@@ -25,9 +25,9 @@ export default class extends Base {
   async index(partern){
     let id = 2;
     let name = '1.zip';
-    let _path = './www/upload/2014213898/web研发部/1/';
+    let _path = './www/upload/2014213897/web研发部/1/';
     fs.createReadStream(_path+name).pipe(unzip.Extract({path:_path}));
-    await this.unzipDb(id);
+    // await this.unzipDb(id);
     
   }
   //解压出口，写入数据库并返回200
