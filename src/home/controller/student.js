@@ -306,7 +306,7 @@ export default class extends Base {
    * }
    * return: json{
    *    status: 200,
-   *    message: 'ok',
+   *    message: 'ok', 
    *    courseWare: 对应部门的所有课件资料
    * }
    */
