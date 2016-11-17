@@ -47,6 +47,11 @@ export default class extends Base {
       name: this.post('name') 用户名
       passwd:this.post('passwd')密码
     }
+    return json{
+      status: 200,
+      message: "登录成功"
+      manager: 
+    }
   */
   async login(partern) {
     let name = partern.post.username;
@@ -72,7 +77,8 @@ export default class extends Base {
       await this.session('managerId',info.id);
       return this.json({
         status: 200,
-        message: '登陆成功'
+        message: '登陆成功',
+        managerInfo: info
       });
     }
   }
