@@ -4,7 +4,7 @@
  */
 export default class extends think.model.base {
     async commitHomework(config){
-      await this
+      return await this
       .model('commit')
       .add(config)
     }

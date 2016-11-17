@@ -49,7 +49,7 @@ export default class extends think.model.relation {
     }
 
     async delStu(_where) {
-      return await this.where(_where).delete();
+      return await this.setRelation('student', false).where(_where).delete();
     }
 
     async isNull(_where) {

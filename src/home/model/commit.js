@@ -18,6 +18,7 @@ export default class extends think.model.relation {
 
     async dec(_where,_update) {
        await this
+       .setRelation('student',false)
        .where(_where)
        .update(_update);
     }
@@ -27,7 +28,7 @@ export default class extends think.model.relation {
         if(state == 'already') {
         return await this
         .where(_where)
-        .field('stu_id,hw_time,hw_score,cm_place')
+        .field('stu_id,hw_time,hw_score,cm_place,id')
         .select();
         } else {
         let sql1 = `select stu_name,stu_num,student.id,sb_commit from student,stubranch where student.id not in(select stu_id from commit where hw_id = "${_where.hw_id}") AND stubranch.stu_id = student.id`,
@@ -39,5 +40,13 @@ export default class extends think.model.relation {
         return data;
         }
       
+    }
+
+    async getPath(_where) {
+        return  this.setRelation('student', false).where(_where).field('cm_place').select();
+    }
+
+    async del(_where) {
+        return this.where(_where).delete();
     }
 }

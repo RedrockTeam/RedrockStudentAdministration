@@ -29,4 +29,8 @@ export default class extends think.model.relation {
     return this.where(_where).field('id','hw_title','hw_detail','hw_pulish','hw_deadline').select();
   }
 
+  async del(_where){
+    return this.setRelation('commit', false).where(_where).delete();
+  }
+
 }

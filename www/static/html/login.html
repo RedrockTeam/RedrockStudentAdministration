@@ -64,6 +64,7 @@
                 passWord = passWordInput.val();
             var url = userName.length === 3 ? managerLoginUrl : stuLoginUr;
             $.post(url, {
+                username: userName,
                 stunum: userName,
                 password: passWord
             }).then(function (res) {

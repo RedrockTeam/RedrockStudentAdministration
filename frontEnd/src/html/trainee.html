@@ -64,7 +64,15 @@
                     .then(function (res) {
                         return this.render('/static/html/trainee_work.html', {
                             target: traineeWorkApp,
-                            data: res
+                            data: {
+                                unfinished: [{
+                                    department: '21',
+                                    title: '12',
+                                    desc: 'assaas',
+                                    startTime: '2016',
+                                    endTime: '15'
+                                }]
+                            }
                         })
                     }.bind(this))
                     .then(function () {
@@ -76,9 +84,14 @@
                 changeActiveTarget(lessonLink.parentNode);
                 $.get('/home/index/route?role=student&action=getCourseWare&b_id=' + userInf.stuBase.branch[0].b_id)
                     .then(function (res) {
+                        var branch = userInf.stuBase.branch;
                         return this.render('/static/html/trainee_lesson.html', {
                             target: traineeWorkApp,
-                            data: res.courseWare
+                            data: {
+                                courseWare: JSON.parse(res.courseWare),
+                                branch: branch,
+                                defaultBName: branch[0].b_name
+                            },
                         })
                             .then(function () {
                                 next();

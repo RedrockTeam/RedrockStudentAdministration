@@ -7,9 +7,12 @@ import redis from 'redis'
 
 export default class extends Base {
   _json(status,message) {
+    if(Object.prototype.toString.call(message) != "[object String]") {
+      message = this.json(message);
+    }
     return this.json({
       status: status,
-      message: this.json(message)
+      message: message
     })
   }
   /**
@@ -22,9 +25,9 @@ export default class extends Base {
   async index(partern){
     let id = 2;
     let name = '1.zip';
-    let _path = './www/upload/2014213898/web研发部/1/';
+    let _path = './www/upload/2014213897/web研发部/1/';
     fs.createReadStream(_path+name).pipe(unzip.Extract({path:_path}));
-    await this.unzipDb(id);
+    // await this.unzipDb(id);
     
   }
   //解压出口，写入数据库并返回200
@@ -68,7 +71,7 @@ export default class extends Base {
     } else {
       await this.session('managerId',info.id);
       return this.json({
-        status: 400,
+        status: 200,
         message: '登陆成功'
       });
     }
@@ -163,20 +166,19 @@ export default class extends Base {
   /**
    * 批量踢人
    */
-  // async delAll(partern) {
-  //       branch  = await this.session('managerId',1);
-  //   let branch = await this.session('managerId');
-  //   let id = partern.get.stu_id;
-  //   id.foreach(async (e) => {
-  //     let state = await this.model('stubranch').delStu({b_id: branch, stu_id: e});
-  //     if(!state) break;
-  //   });
-  //    if(!state) {
-  //     this._json(400,'删除失败');
-  //   } else {
-  //     this._json(200,'删除成功');
-  //   }
-  // }
+
+  async delAll(partern) {
+    let branch = await this.session('managerId');
+    let id = partern.get.stu_id;
+    let state = await this.model('stubranch').delStu({b_id: branch, stu_id: {'in':JSON.parse(id)}});
+    // console.log(state);
+    if(state === 0) {
+      this._json(400,'删除失败');
+    }else{
+      this._json(200,'删除成功');
+    }
+  }
+
 
   /**
    * 学生查询
@@ -263,7 +265,7 @@ export default class extends Base {
   }
   */
   async ifEnd(partern) {
-    let branch = 1;
+    let branch = await session('managerId');
     let nowTime;
     let nhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'>' : nowTime}});
     let allNum = await this.model('stubranch').allPerson({b_id: branch}).length;
@@ -280,24 +282,43 @@ export default class extends Base {
       });
   }
   /**
-  *查看作业 已未上交
+   * 删除发布的作业
+   * let id = partern.get.id;
+   * return 200||400
+   */
+  async del(partern) {
+    let id = partern.get.id;
+    let state = this.model('homework').del({id: id});
+    if(state) {
+       return this._json(200,'删除成功');
+     } else {
+       return this._json(400,'删除失败');
+     }
+  }
+  /**
+  *查看作业 已未上交  那啥 header从上一页自己传吧= =
   * partern.get.state 是否上交状态
   hwId 作业id
-  return:{stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
+  return:{id,cm_place,stu_id,hw_time,hw_score,student[{'id,stu_num,stu_name'}...]}
   [
     {
-      "stu_name": "九",
-      "stu_num": "1214141",
-      "id": 2,
-      "sb_commit": "8"
-    },
-    {
-      "allhw": 1
-    }
+      {
+      id :1 
+    "stu_id": 1,
+    "hw_time": "0000-00-00 00:00:00",
+    "hw_score": null,
+    "cm_place": "重庆",
+    "student": [
+      {
+        "id": 1,
+        "stu_num": "2345655768",
+        "stu_name": "陈"
+      }
+    ]
   ]
   */
   async checkhw(partern) {
-    await this.session('managerId',1);
+   
     let b_id = await this.session('managerId'),
         hwId = partern.get.hw_id,
         state = partern.get.state || 'already',
@@ -311,6 +332,77 @@ export default class extends Base {
     } else {
       return this._json(200,check);
     }
+  }
+
+/**
+ * 下载
+ *  let id = partern.get.id  commit的ID
+   
+
+    return
+    [
+      {
+        "cm_place": "重庆",
+        "student": []
+      }
+    ]
+ */
+  async downHw(partern){
+    let id = partern.get.id,
+        path;
+    if(Object.prototype.toString.call(JSON.parse(id)) === '[object Array]') {
+      path = await this.model('commit').getPath({id:{'in' : JSON.parse(id)}});
+    } else {
+      path = await this.model('commit').getPath({id:id});
+    }
+    if(think.isEmpty(path)){
+      return this._json(400,'下载失败')
+    }else{
+       return this.json({
+         status:200,
+         message:path
+       });
+    }
+  }
+
+
+  /**作业分数修改
+   * let id = partern.get.id  commit的ID
+   * let score = partern.get.score; 分数
+   */
+  async changeHw(partern) {
+     let id = partern.get.id;
+     let score = partern.get.score;
+     let state = this
+     .model('commit')
+     .dec({id: id},{hw_score: score});
+     if(state) {
+        return this._json(200,'修改成功');
+     } else {
+       return this._json(400,'修改失败');
+     }
+  }
+
+   /**删除学员作业
+   * let id = partern.get.id  commit的ID
+   */
+  async delHw(partern) {
+     let id = partern.get.id,
+         state;
+     if(Object.prototype.toString.call(JSON.parse(id)) === '[object Array]') {
+       state = await this
+        .model('commit')
+        .del({id: {'in': JSON.parse(id)}});
+     } else {
+        state = await this
+        .model('commit')
+        .del({id: id});
+     }
+     if(state) {
+        return this._json(200,'删除成功');
+      } else {
+        return this._json(400,'删除失败');
+      }
   }
   /** 
    * input{
@@ -383,6 +475,6 @@ export default class extends Base {
           message: "上传成功"
       })
     })
-    
+
   }
 }
