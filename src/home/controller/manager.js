@@ -71,7 +71,7 @@ export default class extends Base {
     } else {
       await this.session('managerId',info.id);
       return this.json({
-        status: 400,
+        status: 200,
         message: '登陆成功'
       });
     }
