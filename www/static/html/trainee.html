@@ -6,13 +6,13 @@
                     <div class="span3">
                         <ul class="nav nav-tabs nav-stacked" id="left-nav-tabs">
                             <li>
-                                <a id="infLink" href="/trainee/my_inf">我的信息</a>
+                                <a id="infLink" href="/user/trainee/my_inf">我的信息</a>
                             </li>
                             <li>
-                                <a id="workLink" href="/trainee/my_work">作业任务</a>
+                                <a id="workLink" href="/user/trainee/my_work">作业任务</a>
                             </li>
                             <li>
-                                <a id="lessonLink" href="/trainee/my_lesson">课件资料</a>
+                                <a id="lessonLink" href="/user/trainee/my_lesson">课件资料</a>
                             </li>
                         </ul>
                     </div>
@@ -36,29 +36,72 @@
                 }
             }
             traineeIndexRouter.route('/my_inf', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(infLink.parentNode);
-                this.render('/static/html/trainee_inf.html', traineeWorkApp)
+                $.get('./')
+                    .then(function (res) {
+                        return this.render('/static/html/trainee_inf.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                userName: '梁宸',
+                                userRole: '学员',
+                                userAcademy: userInf.stuBase.stuacademy,
+                                userStuId: userInf.stuBase.stunum,
+                                userDepartment: userInf.stuBase.branch.map(function (item) {return item.b_name}).join(' | ')
+                            }
+                        });
+                    }.bind(this))
                     .then(function () {
                         next();
                     });
             });
             traineeIndexRouter.route('/my_work', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(workLink.parentNode);
-                this.render('/static/html/trainee_work.html', traineeWorkApp)
+                $.get('/home/index/route?role=student&action=getHomeWorkById', {
+                    id: userInf.stuBase.stunum
+                })
+                    .then(function (res) {
+                        return this.render('/static/html/trainee_work.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                unfinished: [{
+                                    department: '21',
+                                    title: '12',
+                                    desc: 'assaas',
+                                    startTime: '2016',
+                                    endTime: '15'
+                                }]
+                            }
+                        })
+                    }.bind(this))
                     .then(function () {
                         next();
-                    });
+                    })
             });
             traineeIndexRouter.route('/my_lesson', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(lessonLink.parentNode);
-                this.render('/static/html/trainee_lesson.html', traineeWorkApp)
-                    .then(function () {
-                        next();
-                    });
+                $.get('/home/index/route?role=student&action=getCourseWare&b_id=' + userInf.stuBase.branch[0].b_id)
+                    .then(function (res) {
+                        var branch = userInf.stuBase.branch;
+                        return this.render('/static/html/trainee_lesson.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                courseWare: JSON.parse(res.courseWare),
+                                branch: branch,
+                                defaultBName: branch[0].b_name
+                            },
+                        })
+                            .then(function () {
+                                next();
+                            });
+                    }.bind(this))
             });
             app.capture(infLink);
             app.capture(workLink);
             app.capture(lessonLink);
         }());
+        var arr = [];
     </script>
 </compont> 

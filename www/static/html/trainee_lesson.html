@@ -19,16 +19,22 @@
         color: #fff;
         border: none;
     }
+    .download-all {
+        float: right;
+        margin-right: 108px;
+        display: none;
+    }
 </style>
 <compont>
     <div class="dropdown">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-        WEB研发部
-        <span class="caret"></span>
+            {{ defaultBName }}
+            <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">WEB研发部</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">移动开发部</a></li>
+            {{#branch}}
+                <li role="presentation"><a class="menuitem" data-b_id="{{ b_id }}" role="menuitem" tabindex="-1" href="#">{{ b_name }}</a></li>
+            {{/branch}}
         </ul>
     </div>
     <div class="tabbable" id="tabs-876424">
@@ -38,7 +44,7 @@
                     <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" name="">
+                                <input id="chooseAll" type="checkbox" name="">
                             </th>
                             <th>
                                 部门
@@ -57,56 +63,121 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="lesson-container">
+                        {{#courseWare}}
                         <tr class="info">
                             <th>
-                                <input type="checkbox" name="">
+                                <input type="checkbox" class="check-one">
                             </th>
                             <td>
-                                1
+                                {{ cw_branch }}
                             </td>
                             <td>
-                                TB - Monthly
+                                {{ cw_title }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ cw_detail }}
                             </td>
                             <td>
-                                Default
+                                {{ cw_time }}
                             </td>
                             <td>
-                                <button type="button" class="btn btn-default download">下载</button>
+                                <a download="{{ cw_place }}" href="{{ cw_place }}" class="btn btn-default download">下载</a>
                             </td>
                         </tr>
-
+                        {{/courseWare}}
                     </tbody>
                 </table>
-                <div class="pagination">
-                    <ul>
-                        <li>
-                            <a href="#">上一页</a>
-                        </li>
-                        <li>
-                            <a href="#">1</a>
-                        </li>
-                        <li>
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#">4</a>
-                        </li>
-                        <li>
-                            <a href="#">5</a>
-                        </li>
-                        <li>
-                            <a href="#">下一页</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
+        <input type="button" class="btn btn-mini download-all" value="下载选中">
     </div>
+    <script>
+        function bindDownload () { // 下载相关
+
+            var checkboxlist = $('.check-one');
+            var downloadAll = $('.download-all')
+            var downloadArr = [];
+
+            $('#chooseAll').on('click', function () {
+                checkboxlist.each(function (index, item) {
+                    if (this.checked !== item.checked)
+                        item.click()
+                }.bind(this))
+            })
+
+            downloadAll.on('click', function () {
+                downloadArr.forEach(function (item) {
+                    $(item)
+                        .parents('.info')
+                        .find('.download')[0]
+                        .click()
+                })
+            })
+
+            checkboxlist.on('change', function () {
+                if (this.checked) {
+                    downloadArr.push(this)
+                } else {
+                    downloadArr.splice(
+                        downloadArr.indexOf(this),
+                        1
+                    )
+                }
+                if (downloadArr.length === 0) {
+                    downloadAll.hide()
+                } else {
+                    downloadAll.show()
+                }
+            })
+        }
+
+       ;(function () {
+            bindDownload()
+            var menuitemlist = $('.menuitem');
+            var lessonContainer = $('.lesson-container');
+
+            menuitemlist.on('click', function (e) {
+                e.preventDefault();
+                $.get('/home/index/route?role=student&action=getCourseWare&b_id=' + $(this).attr('data-b_id'))
+                    .then(function (res) {
+                        lessonContainer.html(
+                            renderList(res.courseWare)
+                        );
+                        bindDownload();
+                    })
+            })
+
+            function renderList (data) {
+                var mid = Handlebars.compile(
+                    '{{#courseWare}}\
+                        <tr class="info">\
+                            <th>\
+                                <input type="checkbox" class="check-one">\
+                            </th>\
+                            <td>\
+                                {{ cw_branch }}\
+                            </td>\
+                            <td>\
+                                {{ cw_title }}\
+                            </td>\
+                            <td>\
+                                {{ cw_detail }}\
+                            </td>\
+                            <td>\
+                                {{ cw_time }}\
+                            </td>\
+                            <td>\
+                                <a download="{{ cw_place }}" href="{{ cw_place }}" class="btn btn-default download">下载</a>\
+                            </td>\
+                        </tr>\
+                    {{/courseWare}}'
+                );
+                var tpl = mid({
+                    courseWare: data
+                });
+                return tpl;
+            }
+       }())
+    </script>
 </compont>

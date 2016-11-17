@@ -28,11 +28,11 @@
 <compont>
     <div class="user-inf">
         <p class="trainee-name">
-            杜泽轩
-            <span>学员</span>
+            {{ userName }}
+            <span>{{ userRole }}</span>
         </p>
-        <p>学院：草泥马学院</p>
-        <p>学号：2014214054</p>
-        <p>所属部门：桂儿砸部门</p>
+        <p>学院：{{ userAcademy }}</p>
+        <p>学号：{{ userStuId }}</p>
+        <p>所属部门：{{ userDepartment }}</p>
     </div>
 </compont>

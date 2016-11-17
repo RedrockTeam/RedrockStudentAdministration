@@ -59,54 +59,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="warning">
-                            <td>
-                                1
-                            </td>
-                            <td>
-                                TB - Monthly
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                Default
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-default submit-work">提交</button>
-                            </td>
-                        </tr>
-
+                        {{#unfinished}}
+                            <tr class="warning">
+                                <td>
+                                    {{ department }}
+                                </td>
+                                <td>
+                                    {{ title }}
+                                </td>
+                                <td>
+                                    {{ desc }}
+                                </td>
+                                <td>
+                                    {{ startTime }}
+                                </td>
+                                <td>
+                                    {{ endTime }}
+                                </td>
+                                <td>
+                                    <button class="submit" type="button" class="btn btn-default submit-work">提交</button>
+                                </td>
+                            </tr>
+                        {{/unfinished}}
                     </tbody>
                 </table>
-                <div class="pagination">
-                    <ul>
-                        <li>
-                            <a href="#">上一页</a>
-                        </li>
-                        <li>
-                            <a href="#">1</a>
-                        </li>
-                        <li>
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#">4</a>
-                        </li>
-                        <li>
-                            <a href="#">5</a>
-                        </li>
-                        <li>
-                            <a href="#">下一页</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
             <div class="tab-pane" id="panel-812330">
                 <table class="table">
@@ -133,54 +109,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="success">
-                            <td>
-                                1
-                            </td>
-                            <td>
-                                TB - Monthly
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                Default
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-default submit-work">重新提交</button>
-                            </td>
-                        </tr>
-                        
+                        {{#finished}}
+                            <tr class="success">
+                                <td>
+                                    {{ department }}
+                                </td>
+                                <td>
+                                    {{ title }}
+                                </td>
+                                <td>
+                                    {{ desc }}
+                                </td>
+                                <td>
+                                    {{ startTime }}
+                                </td>
+                                <td>
+                                    {{ endTime }}
+                                </td>
+                                <td>
+                                    <button class="submit" type="button" class="btn btn-default submit-work">提交</button>
+                                </td>
+                            </tr>
+                        {{/finished}}
                     </tbody>
                 </table>
-                <div class="pagination">
-                    <ul>
-                        <li>
-                            <a href="#">上一页</a>
-                        </li>
-                        <li>
-                            <a href="#">1</a>
-                        </li>
-                        <li>
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#">4</a>
-                        </li>
-                        <li>
-                            <a href="#">5</a>
-                        </li>
-                        <li>
-                            <a href="#">下一页</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
             <div class="tab-pane" id="panel-812340">
                 <table class="table">
@@ -204,51 +156,27 @@
                         </tr>
                     </thead>
                     <tbody>
+                    {{#expired}}
                         <tr class="error">
                             <td>
-                                1
+                                {{ department }}
                             </td>
                             <td>
-                                TB - Monthly
+                                {{ title }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ desc }}
                             </td>
                             <td>
-                                Default
+                                {{ startTime }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ endTime }}
                             </td>
                         </tr>
-                        
+                    {{/expired}}
                     </tbody>
                 </table>
-                <div class="pagination">
-                    <ul>
-                        <li>
-                            <a href="#">上一页</a>
-                        </li>
-                        <li>
-                            <a href="#">1</a>
-                        </li>
-                        <li>
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#">4</a>
-                        </li>
-                        <li>
-                            <a href="#">5</a>
-                        </li>
-                        <li>
-                            <a href="#">下一页</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
