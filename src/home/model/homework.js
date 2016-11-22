@@ -17,7 +17,6 @@ export default class extends think.model.relation {
       model: 'commit',
       key: 'id',
       fKey: 'hw_id',
-      field: 'hw_id'
     }
   };
 
