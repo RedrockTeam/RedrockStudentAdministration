@@ -39,7 +39,7 @@
                             item.parentNode.removeChild(item);
                         });
                         childNodes.bodyChildNodes.forEach(function (item) {
-                            item.parentNode.removeChild(item);
+                            item.parentNode && item.parentNode.removeChild(item);
                         });
                     };
                     if (conf.nodeName) target = conf;
@@ -86,10 +86,15 @@
             if (item.nodeName === 'STYLE' && typeof styleLoader === 'function') 
                 item.innerHTML = styleLoader(item.innerHTML);
             if (item.nodeName === 'SCRIPT') {
-                item.innerHTML = '(function() {' + item.innerHTML + '}())';
+                var tmp = document.createElement('script');
+                if (item.src)
+                    tmp.src = item.src;
+                if (!item.src)
+                    tmp.innerHTML = '(function() {' + item.innerHTML + '}())';
                 if (typeof scriptLoader === 'function ') {
-                    item.innerHTML = scriptLoader(item.innerHTML);
+                    tmp.innerHTML = scriptLoader(item.innerHTML);
                 }
+                item = tmp;
             }
             frg.appendChild(item);
         });

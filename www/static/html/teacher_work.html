@@ -59,28 +59,29 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{#nhwList}}
                         <tr class="warning">
                             <td>
-                                1
+                                {{ b_id }}
                             </td>
                             <td>
-                                TB - Monthly
+                                {{ hw_title }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ hw_detail }}
                             </td>
                             <td>
-                                Default
+                                {{ hw_place }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ hw_deadline }}
                             </td>
                             <td>
                                 <button type="button" class="btn btn-default submit-work">查看</button>
-                                <button type="button" class="btn btn-default submit-work">删除</button>
+                                <button data-id="{{ id }}" type="button" class="btn btn-default submit-work delete">删除</button>
                             </td>
                         </tr>
-
+                        {{/nhwList}}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -134,28 +135,29 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{#yhwList}}
                         <tr class="error">
                             <td>
-                                1
+                                {{ b_id }}
                             </td>
                             <td>
-                                TB - Monthly
+                                {{ hw_title }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ hw_detail }}
                             </td>
                             <td>
-                                Default
+                                {{ hw_place }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ hw_deadline }}
                             </td>
-                            <td>    
+                            <td>
                                 <button type="button" class="btn btn-default submit-work">查看</button>
-                                <button type="button" class="btn btn-default submit-work">删除</button>
+                                <button data-id="{{ id }}" type="button" class="btn btn-default submit-work delete">删除</button>
                             </td>
                         </tr>
-                        
+                        {{/yhwList}}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -186,4 +188,18 @@
             </div>
         </div>
     </div>
+    <script>
+        $('.delete').on('click', function () {
+            $.get('/home/index/route?role=manager&action=delHw', {
+                id: $(this).attr('data-id')
+            }).then(function (res) {
+                if (res.staus === 200) {
+                    alert('删除成功');
+                    $(this).parents('tr').remove();
+                } else {
+                    alert('删除失败');
+                }
+            }.bind(this))
+        });
+    </script>
 </compont>

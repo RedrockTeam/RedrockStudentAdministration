@@ -189,17 +189,6 @@
         </div>
     </div>
     <script>
-        $('.delete').on('click', function () {
-            $.get('/home/index/route?role=manager&action=delHw', {
-                id: $(this).attr('data-id')
-            }).then(function (res) {
-                if (res.staus === 200) {
-                    alert('删除成功');
-                    $(this).parents('tr').remove();
-                } else {
-                    alert('删除失败');
-                }
-            }.bind(this))
-        });
+        
     </script>
 </Compont>

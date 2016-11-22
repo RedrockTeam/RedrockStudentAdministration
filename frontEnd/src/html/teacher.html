@@ -17,7 +17,7 @@
                         </ul>
                     </div>
                     <div class="span9" style="margin-left: 0px;">
-                        <h1 style="padding: 0 0 20px 20px;">WEB研发部</h1>
+                        <h1 id="branchName" style="padding: 0 0 20px 20px;">WEB研发部</h1>
                         <div id="traineeWorkApp" class="span12"></div>
                     </div>
                 </div>
@@ -31,6 +31,10 @@
                 workLink = document.getElementById('workLink'),
                 lessonLink = document.getElementById('lessonLink');
             var activeTarget;
+            var userInf = JSON.parse(localStorage.getItem('userInf'));
+
+            document.getElementById('branchName').innerHTML = userInf.managerInfo.b_name;
+
             var changeActiveTarget = function (target) {
                 if (activeTarget !== target) {
                     if (activeTarget) activeTarget.className = '';
@@ -40,24 +44,49 @@
             }
             teacherIndexRouter.route('/people_administration', function (next) {
                 changeActiveTarget(peopleLink.parentNode);
-                this.render('/static/html/teacher_people.html', traineeWorkApp)
-                    .then(function () {
-                        next();
-                    });
+                $.get('/home/index/route?role=manager&action=personManage', {
+                    type: 'up',
+                    page: '1',
+                })
+                    .then(function (res) { 
+                        this.render('/static/html/teacher_people.html', {
+                            target: traineeWorkApp,
+                            data: res
+                        })
+                            .then(function () {
+                                next();
+                            });
+                    }.bind(this))
             });
             teacherIndexRouter.route('/work_administration', function (next) {
                 changeActiveTarget(workLink.parentNode);
-                this.render('/static/html/teacher_work.html', traineeWorkApp)
-                    .then(function () {
-                        next();
-                    });
+                $.get('/home/index/route?role=manager&action=ifEnd')
+                    .then(function (res) {
+                        this.render('/static/html/teacher_work.html', {
+                            target: traineeWorkApp,
+                            data: res
+                        })
+                            .then(function () {
+                                next();
+                            });
+                    }.bind(this))
             });
             teacherIndexRouter.route('/lesson_administration', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(lessonLink.parentNode);
-                this.render('/static/html/teacher_lesson.html', traineeWorkApp)
-                    .then(function () {
-                        next();
-                    });
+                $.get('/home/index/route?role=student&action=getCourseWare', {
+                    b_id: userInf.managerInfo.id
+                }).then(function (res) {
+                    this.render('/static/html/teacher_lesson.html', {
+                        target: traineeWorkApp,
+                        data: {
+                            courseWare: JSON.parse(res.courseWare)
+                        }
+                    })
+                        .then(function () {
+                            next();
+                        });
+                }.bind(this))
             });
             teacherIndexRouter.route('/watch_homework', function (next) {
                 this.render('/static/html/watch_homework.html', traineeWorkApp)
