@@ -149,7 +149,7 @@ export default class extends Base {
   2.判断此人是否还有其他部门
   */
   async delStu(partern){
-    let branch = await session('managerId');
+    let branch = await this.session('managerId');
     let id = partern.get.stu_id;
     let state = await this
     .model('stubranch')
@@ -271,20 +271,15 @@ export default class extends Base {
   }
   */
   async ifEnd(partern) {
-    let branch = await session('managerId');
+    let branch = await this.session('managerId');
     let nowTime = think.datetime();
     let nhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'>' : nowTime}});
-    let allNum = await this.model('stubranch').allPerson({b_id: branch}).length;
-    let npulishNum = nhwList.commit.length;
     let yhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'<' : nowTime}});
-    let ypulishNum = yhwList.commit.length;
 
     this._json(200,{
       nhwList: nhwList,
       yhwList: yhwList,
-      allNum: allNum,
-      npulishNum: npulishNum, 
-      ypulishNum: ypulishNum
+      
       });
   }
   /**
@@ -431,7 +426,7 @@ export default class extends Base {
       }
     }else{
       message = {
-        status: 200,
+        status: 404,
         message: "出了点问题"
       }
     }

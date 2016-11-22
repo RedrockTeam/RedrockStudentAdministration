@@ -19,9 +19,19 @@
         color: #fff;
         border: none;
     }
+    .download-all {
+        float: right;
+        margin-right: 108px;
+        margin: 0 10px 0 10px;
+        margin-right: 58px;
+        display: none;
+    }
+    .delete-all {
+        float: right;
+        display: none;
+    }
 </style>
 <Compont>
-    <button type="button" class="btn btn-default">上传课件</button>
     <div class="tabbable" id="tabs-876424">
         <div class="tab-content">
             <div class="tab-pane active">
@@ -29,7 +39,10 @@
                     <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" name="">
+                                <input id="chooseAll" type="checkbox" name="">
+                            </th>
+                            <th>
+                                部门
                             </th>
                             <th>
                                 课件（资料）标题
@@ -45,54 +58,36 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="lesson-container">
+                        {{#courseWare}}
                         <tr class="info">
                             <th>
-                                <input type="checkbox" name="">
+                                <input type="checkbox" class="check-one">
                             </th>
                             <td>
-                                TB - Monthly
+                                {{ cw_branch }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ cw_title }}
                             </td>
                             <td>
-                                Default
+                                {{ cw_detail }}
                             </td>
                             <td>
-                                <button type="button" class="btn btn-default download">下载</button>
-                                <button type="button" class="btn btn-default download">删除</button>
+                                {{ cw_time }}
+                            </td>
+                            <td>
+                                <a download="{{ cw_place }}" href="{{ cw_place }}" class="btn btn-default download">下载</a>
+                                <a data-id="{{ id }}" download="{{ cw_place }}" href="{{ cw_place }}" class="btn btn-default download delete">删除</a>
                             </td>
                         </tr>
-
+                        {{/courseWare}}
                     </tbody>
                 </table>
-                <div class="pagination">
-                    <ul>
-                        <li>
-                            <a href="#">上一页</a>
-                        </li>
-                        <li>
-                            <a href="#">1</a>
-                        </li>
-                        <li>
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#">4</a>
-                        </li>
-                        <li>
-                            <a href="#">5</a>
-                        </li>
-                        <li>
-                            <a href="#">下一页</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
+        <input type="button" class="btn btn-mini download-all" value="下载选中">
+        <input type="button" class="btn btn-mini delete-all" value="删除选中">
     </div>
+    <script src="/static/script/teacher_lesson.js"></script>
 </Compont>

@@ -19,16 +19,22 @@
         color: #fff;
         border: none;
     }
+    .score-input {
+        width: 40px;
+        margin: -1px 6px 0 0;
+        margin-bottom: 0 !important;
+        float: left;
+    }
 </style>
 <compont>
     <div class="dropdown">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-        默认排序
+        分数升序
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">WEB研发部</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">移动开发部</a></li>
+            <li role="presentation"><a data-type="up" class="menuitem" role="menuitem" tabindex="-1" href="#">分数升序</a></li>
+            <li role="presentation"><a data-type="down" class="menuitem" role="menuitem" tabindex="-1" href="#">分数降序</a></li>
         </ul>
     </div>
     <div class="tabbable" id="tabs-876424">
@@ -57,29 +63,31 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="people-container">
+                        {{#pageMessage.data}}
                         <tr class="info">
                             <th>
                                 <input type="checkbox" name="">
                             </th>
                             <td>
-                                1
+                                {{ student.stu_name }}
                             </td>
                             <td>
-                                TB - Monthly
+                                {{ student.stu_num }}
                             </td>
                             <td>
-                                01/04/2012
+                                {{ student.stu_academy }}
                             </td>
                             <td>
-                                Default
+                                {{ sb_score }}
                             </td>
                             <td>
-                                <button type="button" class="btn btn-default download">修改分数</button>
-                                <button type="button" class="btn btn-default download">删除</button>
+                                <input type="text" class="score-input">
+                                <button data-id="{{stu_id}}" type="button" class="btn btn-default download change-score">修改分数</button>
+                                <button data-id="{{stu_id}}" type="button" class="btn btn-default download delete">删除</button>
                             </td>
                         </tr>
-
+                        {{/pageMessage.data}}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -110,4 +118,5 @@
             </div>
         </div>
     </div>
+    <script src="/static/script/teacher_people.js"></script>
 </compont>

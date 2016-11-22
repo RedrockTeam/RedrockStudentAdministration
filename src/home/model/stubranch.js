@@ -16,7 +16,7 @@ export default class extends think.model.relation {
 
     relation = {
         student: {
-        type: think.model.HAS_MANY,
+        type: think.model.HAS_ONE,
         model: 'student', //关联模型
         key: 'stu_id',//本模型的关联字段
         fKey: 'id',//被关联模型（作为附属表）的对应关联字段  stu_id == id
