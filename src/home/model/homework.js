@@ -26,7 +26,7 @@ export default class extends think.model.relation {
   }
 
   async notEnd(_where) {
-    return this.where(_where).field('id','hw_title','hw_detail','hw_pulish','hw_deadline').select();
+    return this.where(_where).select();
   }
 
   async del(_where){

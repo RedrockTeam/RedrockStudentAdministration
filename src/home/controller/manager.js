@@ -271,7 +271,8 @@ export default class extends Base {
   }
   */
   async ifEnd(partern) {
-    let branch = await this.session('managerId');
+    //let branch = await this.session('managerId');
+    let branch = 1
     let nowTime = think.datetime();
     let nhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'>' : nowTime}});
     let yhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'<' : nowTime}});
@@ -279,7 +280,6 @@ export default class extends Base {
     this._json(200,{
       nhwList: nhwList,
       yhwList: yhwList,
-      
       });
   }
   /**
