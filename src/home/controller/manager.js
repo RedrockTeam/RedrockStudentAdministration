@@ -272,7 +272,7 @@ export default class extends Base {
   */
   async ifEnd(partern) {
     let branch = await session('managerId');
-    let nowTime;
+    let nowTime = think.datetime();
     let nhwList = await this.model('homework').notEnd({b_id: branch,hw_deadline: {'>' : nowTime}});
     let allNum = await this.model('stubranch').allPerson({b_id: branch}).length;
     let npulishNum = nhwList.commit.length;
