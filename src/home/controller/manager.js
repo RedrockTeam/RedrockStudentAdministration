@@ -476,6 +476,16 @@ export default class extends Base {
           message: "上传成功"
       })
     })
-
+  }
+  async getHomeworkConditionById(partern){
+    let data = await this
+    .model('homework')
+    .getHomeworkConditionById(partern.get.id)
+    let branchId = await this.session('managerId') 
+    data.map((item)=>{
+      item.downloadPlace = item.cm_place + '.zip'
+    })
+    //data.previewPlace = 
+    this.json(data)
   }
 }

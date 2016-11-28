@@ -31,5 +31,9 @@ export default class extends think.model.relation {
   async del(_where){
     return this.setRelation('commit', false).where(_where).delete();
   }
-
+  async getHomeworkConditionById(id){
+    let sql = `SELECT commit.id, student.stu_name, student.stu_num, commit.hw_time, commit.hw_score, commit.cm_place FROM commit, student WHERE commit.hw_id = ${id}`,
+        data = await this.query(sql)
+        return data
+  }
 }
