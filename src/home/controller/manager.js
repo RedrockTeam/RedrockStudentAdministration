@@ -21,7 +21,7 @@ export default class extends Base {
         path:文件路径
         name: 文件名
     }
-  */  
+  */
   async index(partern){
     let id = 2;
     let name = '1.zip';
@@ -478,14 +478,20 @@ export default class extends Base {
     })
   }
   async getHomeworkConditionById(partern){
-    let data = await this
+    let homeworkCondition = await this
     .model('homework')
     .getHomeworkConditionById(partern.get.id)
     let branchId = await this.session('managerId') 
-    data.map((item)=>{
+    homeworkCondition.map((item)=>{
       item.downloadPlace = item.cm_place + '.zip'
     })
+    let homeworMessage = await this
+    .model('homework')
+    .getHomeworkMessage(partern.get.id)
     //data.previewPlace = 
-    this.json(data)
+    this.json({
+      homeworkMessage: homeworMessage,
+      homeworkCondition: homeworkCondition
+    })
   }
 }

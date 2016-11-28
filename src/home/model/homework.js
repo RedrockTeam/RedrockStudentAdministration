@@ -36,4 +36,13 @@ export default class extends think.model.relation {
         data = await this.query(sql)
         return data
   }
+  async getHomeworkMessage(id){
+    return await this
+    .model('homework')
+    .where({
+      id: id
+    })
+    .setRelation("commit", false)
+    .select()
+  }
 }
