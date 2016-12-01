@@ -89,10 +89,21 @@
                 }.bind(this))
             });
             teacherIndexRouter.route('/watch_homework', function (next) {
-                this.render('/static/html/watch_homework.html', traineeWorkApp)
+                $.get('/home/index/route?role=manager&action=getHomeworkConditionById', {
+                    id: this.req.getQuery().id
+                })
+                    .then(function (res) {
+                        this.render('/static/html/watch_homework.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                homeworkMessage: res.homeworkMessage[0],
+                                homeworkCondition: res.homeworkCondition
+                            }
+                        })
                     .then(function () {
                         next();
                     });
+                }.bind(this));
             });
             app.capture(peopleLink);
             app.capture(workLink);

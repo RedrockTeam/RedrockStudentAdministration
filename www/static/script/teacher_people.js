@@ -46,6 +46,7 @@ function bind () {
                 peopleContainer.html(
                     renderList(res.pageMessage.data)
                 );
+                bind();
             })
     })
 
@@ -69,6 +70,7 @@ function bind () {
                         {{ sb_score }}\
                     </td>\
                     <td>\
+                        <input type="text" class="score-input">\
                         <button type="button" class="btn btn-default download">修改分数</button>\
                         <button type="button" class="btn btn-default download">删除</button>\
                     </td>\

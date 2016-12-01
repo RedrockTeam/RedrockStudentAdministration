@@ -14,6 +14,7 @@
             navbarTitle.innerHTML = val;
         };
     }();
+    app.use(queryParserMiddleware());
     app.use(routeHbsMiddleware(app.getRootLocation()));
 
     loginRouter.route('/login', function (next) {

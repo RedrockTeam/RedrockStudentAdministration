@@ -27,15 +27,20 @@
         color: #fff;
         border: none;
     }
+    .score-input {
+        width: 40px;
+        margin: -4px 6px 0 0;
+        margin-bottom: 0 !important;
+    }
 </style>
 <compont>
     <div class="work-inf">
         <p class="work-name">
-            作业标题
+            {{ homeworkMessage.hw_title }}
         </p>
-        <p>作业说明：草泥马学院</p>
-        <p>截止时间：2014214054</p>
-        <p>上交情况 100/110</p>
+        <p>作业说明：{{ homeworkMessage.hw_detail }}</p>
+        <p>截止时间：{{ homeworkMessage.hw_deadline }}</p>
+        <p>上交情况 100/200</p>
     </div>
     <div class="tabbable" id="tabs-876424">
         <ul class="nav nav-tabs" id="content-nav-tabs">
@@ -69,27 +74,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="warning">
-                            <td>
-                                1
-                            </td>
-                            <td>
-                                TB - Monthly
-                            </td>
-                            <td>
-                                01/04/2012
-                            </td>
-                            <td>
-                                Default
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-default submit-work">预览</button>
-                                <button type="button" class="btn btn-default submit-work">下载</button>
-                                <button type="button" class="btn btn-default submit-work">评分</button>
-                                <button type="button" class="btn btn-default submit-work">删除</button>
-                            </td>
-                        </tr>
-
+                        {{#homeworkCondition}}
+                            <tr class="warning">
+                                <td>
+                                    {{ stu_name }}
+                                </td>
+                                <td>
+                                    {{ stu_num }}
+                                </td>
+                                <td>
+                                    {{ hw_time }}
+                                </td>
+                                <td>
+                                    {{ hw_score }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default submit-work">预览</button>
+                                    <button type="button" class="btn btn-default submit-work">下载</button>
+                                    <input type="text" class="score-input">
+                                    <button data-id="{{ id }}" type="button" class="btn btn-default submit-work mark">评分</button>
+                                    <button data-id="{{ id }}" type="button" class="btn btn-default submit-work delete">删除</button>
+                                </td>
+                            </tr>
+                        {{/homeworkCondition}}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -134,17 +141,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="success">
-                            <td>
-                                1
-                            </td>
-                            <td>
-                                TB - Monthly
-                            </td>
-                            <td></td>
-                        </tr>
-                        
-                    </tbody>
+                        {{#nhwList}}
+                            <tr class="warning">
+                                <td>
+                                    {{ s_name }}
+                                </td>
+                                <td>
+                                    {{ s_id }}
+                                </td>
+                                <td>
+                                    {{ s_pro }}
+                                </td>
+                        {{/nhwList}}
+                    </tr></tbody>
                 </table>
                 <div class="pagination">
                     <ul>
@@ -174,4 +183,21 @@
             </div>
         </div>
     </div>
+    <script>
+    $('.mark')
+        .on('click', function () {
+            var $this = $(this);
+            var score = $this.prev().val();
+            $.get('/home/index/route?role=manager&action=changeHw', {
+                id: $this.attr('data-id'),
+                score: score
+            })
+                .then(function (res) {
+                    alert(res.message);
+                    if (res.status === 200) {
+                        $this.parent().prev().html(score);
+                    }
+                });
+        })
+    </script>
 </compont>
