@@ -3,7 +3,6 @@
 import Base from './base.js'
 import redis from 'redis'
 import fs from 'fs'
-import unzip from 'unzip'
 import child from 'child_process'
 
 export default class extends Base {

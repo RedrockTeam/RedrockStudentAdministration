@@ -1,7 +1,6 @@
 'use strict'
 import Base from './base.js'
 import fs from 'fs'
-import unzip from 'unzip'
 import {res} from '../../common/function.js'
 import redis from 'redis'
 
@@ -15,32 +14,7 @@ export default class extends Base {
       message: message
     })
   }
-  /**
-  *解压
-    {
-        path:文件路径
-        name: 文件名
-    }
-  */
-  async index(partern){
-    let id = 2;
-    let name = '1.zip';
-    let _path = './www/upload/2014213897/web研发部/1/';
-    fs.createReadStream(_path+name).pipe(unzip.Extract({path:_path}));
-    // await this.unzipDb(id);
-    
-  }
-  //解压出口，写入数据库并返回200
-  async unzipDb(id){
-    let commit = this.model('commit');
-    await commit.dec({id:id},{is_free:1});
-    return this.json({
-      status: 200,
-      message: '解压成功'
-    });
-  }
-
-
+  
   /**
   *登陆
     {
