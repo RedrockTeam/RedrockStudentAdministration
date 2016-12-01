@@ -77,6 +77,17 @@ export default class extends Base {
     })
     return flag
   }
+  async creatHomewrkDir(fileTime, uploadPath, _redis, stunum){
+    if(parseInt(fileTime)) return
+    let is_exit = fs.existsSync(uploadPath)
+    if(!is_exit){
+      this.makedir(uploadPath)
+    }else{
+      await think.rmdir(uploadPath, true)
+      this.makedir(uploadPath)
+      _redis.del(stunum)
+    }
+  }
   async upload(partern){
     await this.session('stunum', 2014213897)
     await this.session('id', 1)
@@ -95,15 +106,10 @@ export default class extends Base {
         hw_id = fileMessage.hw_id,
         branch = fileMessage.branch,
 				uploadPath = `${think.RESOURCE_PATH}/upload/${stunum}/${branch}/${hw_id}`,
-        realName = `${uploadPath}/${fileName}`,
-        is_exit = fs.existsSync(uploadPath)
-        if(!is_exit){
-          this.makedir(uploadPath)
-        }
-		    await fs.renameSync(filePath, realName)
-        
+        realName = `${uploadPath}/${fileName}`
+        await this.creatHomewrkDir(fileTime, uploadPath, _redis, stunum)
+        await fs.renameSync(filePath, realName)
 				// 将文件rename，防止被这个垃圾框架自动清除
-
 		// 出口
 		if(fileMessage.complete){
 			_redis.hset(stunum, 'complete', true)
