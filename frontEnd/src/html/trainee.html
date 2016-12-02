@@ -59,20 +59,12 @@
                 var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(workLink.parentNode);
                 $.get('/home/index/route?role=student&action=getHomeWorkById', {
-                    id: userInf.stuBase.stunum
+                    id: userInf.stuBase.id
                 })
                     .then(function (res) {
                         return this.render('/static/html/trainee_work.html', {
                             target: traineeWorkApp,
-                            data: {
-                                unfinished: [{
-                                    department: '21',
-                                    title: '12',
-                                    desc: 'assaas',
-                                    startTime: '2016',
-                                    endTime: '15'
-                                }]
-                            }
+                            data: res.homeworks
                         })
                     }.bind(this))
                     .then(function () {

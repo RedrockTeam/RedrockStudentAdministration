@@ -87,8 +87,12 @@
                 item.innerHTML = styleLoader(item.innerHTML);
             if (item.nodeName === 'SCRIPT') {
                 var tmp = document.createElement('script');
-                if (item.src)
-                    tmp.src = item.src;
+                for (var key in item.attributes) {
+                    var attr = item.attributes[key]
+                    if (attr) {
+                        tmp[attr.name] = attr.value
+                    }
+                }
                 if (!item.src)
                     tmp.innerHTML = '(function() {' + item.innerHTML + '}())';
                 if (typeof scriptLoader === 'function ') {
