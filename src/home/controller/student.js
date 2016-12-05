@@ -88,6 +88,7 @@ export default class extends Base {
     }
   }
   async upload(partern){
+    console.log(1)
     await this.session('stunum', 2014213897)
     await this.session('id', 1)
     if(!this.isEnough(partern.post)){

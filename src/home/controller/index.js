@@ -14,6 +14,7 @@ export default class extends Base {
 	}
 
 	async routeAction(){
+		console.log(1)
 		let path = this.getPath(),	//{role: 控制器名，action: 方法名}
 				role = path.role,
 				action = path.action,
