@@ -18,6 +18,7 @@ export default class extends Base {
 				role = path.role,
 				action = path.action,
 				parterns = {} 
+		if(!this.filter(role, action)) return	//是否登录验证
 		if(this.isPost())
 			  parterns.post = this.postParterns()
 		parterns.get = this.getParterns()
@@ -27,7 +28,7 @@ export default class extends Base {
 	 async filter(role, action){
 		 let is_pass = false
 		 if(action == 'login')
-		 	return
+		 	return true
 		 switch (role) {
 			 case 'student':
 				 if(!await session('stunum'))
@@ -79,10 +80,10 @@ export default class extends Base {
   }
 
   async dispatch(role, action, parterns){
-	if(!role || !action)
-	  return this.json({
-		status: 400,
-		message: "参数不足"
+		if(!role || !action)
+			return this.json({
+			status: 400,
+			message: "参数不足"
 	  })
 	  await this.controller(role, 'home')[action](parterns)
   }

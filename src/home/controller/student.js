@@ -88,8 +88,8 @@ export default class extends Base {
     }
   }
   async upload(partern){
-    await this.session('stunum', 2014213897)
-    await this.session('id', 1)
+    // await this.session('stunum', 2014213897)
+    // await this.session('id', 1)
     if(!this.isEnough(partern.post)){
       return this.json({
         status: 400,
@@ -212,7 +212,7 @@ export default class extends Base {
             message = JSON.parse(res[i])
             continue
           }
-          content[parseInt(i)] = this.readFilePromise(res[i]);
+          content[parseInt(i)] = this.readFilePromise(res[i])
         }
         return this.connect(_redis, content, message, resolve, key)
       })

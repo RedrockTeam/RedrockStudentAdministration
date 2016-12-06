@@ -293,7 +293,6 @@ export default class extends Base {
   ]
   */
   async checkhw(partern) {
-   
     let b_id = await this.session('managerId'),
         hwId = partern.get.hw_id,
         state = partern.get.state || 'already',
