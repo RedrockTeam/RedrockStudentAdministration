@@ -190,7 +190,11 @@
                 })
             uploadObj.appendTo(document.body)
             uploadObj.on('change', function() {
-                uploadObj.show() && uploadObj.upload();
+                uploadObj.show() && uploadObj.upload({
+                    count: 0, 
+                    nowPos: 0,
+                    endPos: 0
+                });
             })
         })
     </script>

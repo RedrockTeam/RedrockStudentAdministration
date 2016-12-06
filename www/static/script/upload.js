@@ -68,29 +68,55 @@ var uploadObj = (function() {
         on: function(type, cb) {
             $(fileInput).on(type, cb);
         },
-        upload: function(url) {
-            var count = 0;
-            var nowPos = 0;
-            var endPos = 0;
+        upload: function(config) {
+            var count = config.count;
+            var nowPos = config.nowPos;
+            var endPos = config.endPos;
             var file = getFiles()[0];
             var data;
-            while(file.size > nowPos) {
-                if (nowPos + fileSize > file.size)
-                    endPos = file.size
-                else
-                    endPos = nowPos + fileSize
-                data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
-                $.ajax({
-                    url: '/home/index/route?role=student&action=upload',
-                    type: 'POST',
-                    cache: false,
-                    data: data,
-                    processData: false,
-                    contentType: false
-                }).done(function(res) {
-                }).fail(function(res) {});
+            if (nowPos + fileSize > file.size)
+                endPos = file.size
+            else
+                endPos = nowPos + fileSize
+            data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
+            $.ajax({
+                url: '/home/index/route?role=student&action=upload',
+                type: 'POST',
+                cache: false,
+                data: data,
+                processData: false,
+                contentType: false
+            }).done(function(res) {
                 nowPos = endPos
-            }
+                uploadObj.upload({
+                    count: count, 
+                    nowPos: nowPos,
+                    endPos: endPos
+                })
+            }).fail(function(res) {
+                alert('网络好像出了点问题')
+            });
+            
+            // while(file.size > nowPos) {
+            //     if (nowPos + fileSize > file.size)
+            //         endPos = file.size
+            //     else
+            //         endPos = nowPos + fileSize
+            //     data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
+            //     $.ajax({
+            //         url: '/home/index/route?role=student&action=upload',
+            //         type: 'POST',
+            //         cache: false,
+            //         data: data,
+            //         processData: false,
+            //         contentType: false
+            //     }).done(function(res) {
+                    
+            //     }).fail(function(res) {
+
+            //     });
+            //     nowPos = endPos
+            // }
         }
     }
 }());
