@@ -109,6 +109,7 @@ export default class extends Base {
         await this.creatHomewrkDir(fileTime, uploadPath, _redis, stunum)
         await fs.renameSync(filePath, realName)
 				// 将文件rename，防止被这个垃圾框架自动清除
+    _redis.hset(stunum, fileTime, realName)
 		// 出口
 		if(fileMessage.complete){
 			_redis.hset(stunum, 'complete', true)
@@ -139,7 +140,7 @@ export default class extends Base {
           complete: false
         })
 		}
-		_redis.hset(stunum, fileTime, realName)
+		// _redis.hset(stunum, fileTime, realName)
 		_redis.hset(stunum, 'complete', false)
 		_redis.quit()
 		return this.json({
@@ -206,6 +207,7 @@ export default class extends Base {
       _redis.hgetall(key, (err, res) => {
         let content = [],
             message = {}
+            console.log(res)
         for(let i in res){
           if(i == "complete") continue
           if(i == "message"){

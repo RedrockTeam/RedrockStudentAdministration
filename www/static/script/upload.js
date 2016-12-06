@@ -2,7 +2,7 @@ var uploadObj = (function() {
 
     var fileInput = createFileInput()
 
-    var fileSize = 1024 * 1024
+    var fileSize = 100 * 1024
 
     var uploadContent = $('<div id="cover">\
         <div id="uploadMsg">\
@@ -42,7 +42,7 @@ var uploadObj = (function() {
         formdata.append('fileTime', count);
         formdata.append('branch', 'web研发部');
         formdata.append('hw_id', 1);
-        (endPos === fileSize) && formdata.append('complete', true);
+        (endPos > fileSize) && formdata.append('complete', true);
         return formdata
     }
 
@@ -74,10 +74,10 @@ var uploadObj = (function() {
             var endPos = config.endPos;
             var file = getFiles()[0];
             var data;
-            if (nowPos + fileSize > file.size)
-                endPos = file.size
-            else
-                endPos = nowPos + fileSize
+            var flag = false;
+            if (nowPos + fileSize > file.size) flag = true
+            endPos = nowPos + fileSize
+            console.log(nowPos, endPos, file.size)
             data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
             $.ajax({
                 url: '/home/index/route?role=student&action=upload',
@@ -87,6 +87,7 @@ var uploadObj = (function() {
                 processData: false,
                 contentType: false
             }).done(function(res) {
+                if(flag) return alert("上传完毕")
                 nowPos = endPos
                 uploadObj.upload({
                     count: count, 
