@@ -20,7 +20,7 @@
         border: none;
     }
 </style>
-<Compont>
+<compont>
     <div class="tabbable" id="tabs-876424">
         <ul class="nav nav-tabs" id="content-nav-tabs">
             <li class="active">
@@ -62,19 +62,19 @@
                         {{#unfinished}}
                             <tr class="warning">
                                 <td>
-                                    {{ b_id }}
+                                    {{ department }}
                                 </td>
                                 <td>
-                                    {{ hw_title }}
+                                    {{ title }}
                                 </td>
                                 <td>
-                                    {{ hw_detail }}
+                                    {{ desc }}
                                 </td>
                                 <td>
-                                    {{ hw_publish }}
+                                    {{ startTime }}
                                 </td>
                                 <td>
-                                    {{ hw_deadline }}
+                                    {{ endTime }}
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-default submit-work">提交</button>
@@ -112,7 +112,7 @@
                         {{#finished}}
                             <tr class="success">
                                 <td>
-                                    {{ b_id }}
+                                    {{ department }}
                                 </td>
                                 <td>
                                     {{ hw_title }}
@@ -121,13 +121,13 @@
                                     {{ hw_detail }}
                                 </td>
                                 <td>
-                                    {{ hw_publish }}
+                                    {{ startTime }}
                                 </td>
                                 <td>
                                     {{ hw_deadline }}
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-default submit-work">提交</button>
+                                    <button class="submit" type="button" class="btn btn-default submit-work">提交</button>
                                 </td>
                             </tr>
                         {{/finished}}
@@ -159,19 +159,19 @@
                     {{#expired}}
                         <tr class="error">
                             <td>
-                                {{ b_id }}
+                                {{ department }}
                             </td>
                             <td>
-                                {{ hw_title }}
+                                {{ title }}
                             </td>
                             <td>
-                                {{ hw_detail }}
+                                {{ desc }}
                             </td>
                             <td>
-                                {{ hw_publish }}
+                                {{ startTime }}
                             </td>
                             <td>
-                                {{ hw_deadline }}
+                                {{ endTime }}
                             </td>
                         </tr>
                     {{/expired}}
@@ -180,7 +180,7 @@
             </div>
         </div>
     </div>
-    <script id="upload" src="/trainee/static/script/upload.js"></script>
+    <script id="upload" src="/static/script/upload.js"></script>
     <script>
 
         $('#upload').on('load', function() {
@@ -194,4 +194,4 @@
             })
         })
     </script>
-</Compont>
+</compont>

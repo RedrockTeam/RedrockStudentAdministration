@@ -5,7 +5,7 @@ var babel = require('gulp-babel');
 var gulpif = require('gulp-if');
 var plumber = require('gulp-plumber');
 
-var dist = '../www/static',
+var dist = '../www/trainee/static',
     src = './src';
 var srcMatch = {
     html: src + '/html/*.html',

@@ -62,19 +62,19 @@
                         {{#unfinished}}
                             <tr class="warning">
                                 <td>
-                                    {{ department }}
+                                    {{ b_id }}
                                 </td>
                                 <td>
-                                    {{ title }}
+                                    {{ hw_title }}
                                 </td>
                                 <td>
-                                    {{ desc }}
+                                    {{ hw_detail }}
                                 </td>
                                 <td>
-                                    {{ startTime }}
+                                    {{ hw_publish }}
                                 </td>
                                 <td>
-                                    {{ endTime }}
+                                    {{ hw_deadline }}
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-default submit-work">提交</button>
@@ -112,7 +112,7 @@
                         {{#finished}}
                             <tr class="success">
                                 <td>
-                                    {{ department }}
+                                    {{ b_id }}
                                 </td>
                                 <td>
                                     {{ hw_title }}
@@ -121,13 +121,13 @@
                                     {{ hw_detail }}
                                 </td>
                                 <td>
-                                    {{ startTime }}
+                                    {{ hw_publish }}
                                 </td>
                                 <td>
                                     {{ hw_deadline }}
                                 </td>
                                 <td>
-                                    <button class="submit" type="button" class="btn btn-default submit-work">提交</button>
+                                    <button type="button" class="btn btn-default submit-work">提交</button>
                                 </td>
                             </tr>
                         {{/finished}}
@@ -159,19 +159,19 @@
                     {{#expired}}
                         <tr class="error">
                             <td>
-                                {{ department }}
+                                {{ b_id }}
                             </td>
                             <td>
-                                {{ title }}
+                                {{ hw_title }}
                             </td>
                             <td>
-                                {{ desc }}
+                                {{ hw_detail }}
                             </td>
                             <td>
-                                {{ startTime }}
+                                {{ hw_publish }}
                             </td>
                             <td>
-                                {{ endTime }}
+                                {{ hw_deadline }}
                             </td>
                         </tr>
                     {{/expired}}

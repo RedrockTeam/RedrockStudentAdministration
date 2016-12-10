@@ -406,7 +406,7 @@
        if (typeof module === 'object' && module.exports && exports) {
             module.exports = app;
         } else {
-            window = app;
+            window.app = app;
         } 
     }))
 

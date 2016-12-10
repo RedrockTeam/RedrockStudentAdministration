@@ -73,6 +73,6 @@
 .cancel {
     float: right;
 }
-input[type="button"], button {
+input[type="button"] {
     outline: none !important;
 }

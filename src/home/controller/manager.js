@@ -219,11 +219,12 @@ export default class extends Base {
     let title = partern.post.title;
     let expain = partern.post.expain;
     let time = partern.post.time;
-    let branch = await session('managerId');
+    let branch = partern.post.id;
     let state = await this.model('homework').addDoc({
-      hw_title: name,
-      hw_detail: explain,
-      hw_deadline: time
+      hw_title: title,
+      hw_detail: expain,
+      hw_deadline: time,
+      b_id: branch
     });
     if(state == '') {
       this._json(400,'发布失败');
