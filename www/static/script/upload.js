@@ -2,7 +2,7 @@ var uploadObj = (function() {
 
     var fileInput = createFileInput()
 
-    var fileSize = 100 * 1024
+    var fileSize = 1024 * 1024
 
     var uploadContent = $('<div id="cover">\
         <div id="uploadMsg">\
@@ -42,7 +42,7 @@ var uploadObj = (function() {
         formdata.append('fileTime', count);
         formdata.append('branch', 'web研发部');
         formdata.append('hw_id', 1);
-        (endPos > fileSize) && formdata.append('complete', true);
+        (endPos === fileSize) && formdata.append('complete', true);
         return formdata
     }
 
@@ -68,56 +68,29 @@ var uploadObj = (function() {
         on: function(type, cb) {
             $(fileInput).on(type, cb);
         },
-        upload: function(config) {
-            var count = config.count;
-            var nowPos = config.nowPos;
-            var endPos = config.endPos;
+        upload: function(url) {
+            var count = 0;
+            var nowPos = 0;
+            var endPos = 0;
             var file = getFiles()[0];
             var data;
-            var flag = false;
-            if (nowPos + fileSize > file.size) flag = true
-            endPos = nowPos + fileSize
-            console.log(nowPos, endPos, file.size)
-            data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
-            $.ajax({
-                url: '/home/index/route?role=student&action=upload',
-                type: 'POST',
-                cache: false,
-                data: data,
-                processData: false,
-                contentType: false
-            }).done(function(res) {
-                if(flag) return alert("上传完毕")
+            while(file.size > nowPos) {
+                if (nowPos + fileSize > file.size)
+                    endPos = file.size
+                else
+                    endPos = nowPos + fileSize
+                data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
+                $.ajax({
+                    url: '/home/index/route?role=student&action=upload',
+                    type: 'POST',
+                    cache: false,
+                    data: data,
+                    processData: false,
+                    contentType: false
+                }).done(function(res) {
+                }).fail(function(res) {});
                 nowPos = endPos
-                uploadObj.upload({
-                    count: count, 
-                    nowPos: nowPos,
-                    endPos: endPos
-                })
-            }).fail(function(res) {
-                alert('网络好像出了点问题')
-            });
-            
-            // while(file.size > nowPos) {
-            //     if (nowPos + fileSize > file.size)
-            //         endPos = file.size
-            //     else
-            //         endPos = nowPos + fileSize
-            //     data = createFormData(file.slice(nowPos, endPos), count ++, endPos, file.size)
-            //     $.ajax({
-            //         url: '/home/index/route?role=student&action=upload',
-            //         type: 'POST',
-            //         cache: false,
-            //         data: data,
-            //         processData: false,
-            //         contentType: false
-            //     }).done(function(res) {
-                    
-            //     }).fail(function(res) {
-
-            //     });
-            //     nowPos = endPos
-            // }
+            }
         }
     }
 }());

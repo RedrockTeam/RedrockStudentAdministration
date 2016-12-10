@@ -5,11 +5,25 @@
     var nowLocation = window.location.href;
     var contextMiddleware = [];
 
+    var variables = {}
+
     /*
     *   context 中间件
     */
     function use (middleware) {
         contextMiddleware.push(middleware);
+    }
+    /*
+    *   set设置相关的变量将挂载到app上作为变量
+    */
+    function set (key, val) {
+        variables[key] = val
+    }
+    /*
+    *   get获取set设置的变量
+    */
+    function get (key) {
+        return variables[key]
     }
     // 获取跟路径
     function getRootLocation () {
@@ -360,22 +374,42 @@
         controllers._match(nowLocation);
         nowLocation = window.location.href;
     }
+    // 设置不可访问
+    function setRestrictingAccess (obj, key, val) {
+        Object.defineProperty(obj, key, {
+            value: val,
+            writeable: false,
+            enumerable: false,
+            configurable: false
+        });
+    }
     /*
     *   判断当前环境 如果是amd环境的话 暴露接口
     */
-    var app = {
-        Router: Router,
-        capture: controllers.capture.bind(controllers),
-        use: use,
-        redirect: controllers.push.bind(controllers),
-        getRootLocation: getRootLocation,
-        setRootLocation: setRootLocation
-    };
+    (function (factory) {
+        var app = {
+            Router: Router,
+            capture: controllers.capture.bind(controllers),
+            redirect: controllers.push.bind(controllers),
+            getRootLocation: getRootLocation,
+            setRootLocation: setRootLocation,
+            use: use,
+            set: set,
+            get: get
+        };
+        for (var key in app) {
+            setRestrictingAccess(app, key, app[key])
+        }
+        factory(app);
 
-    if (typeof module === 'object' && module.exports && exports) {
-        module.exports = app;
-    } else {
-        window.app = app;
-    }
+    }(function (app) {
+       if (typeof module === 'object' && module.exports && exports) {
+            module.exports = app;
+        } else {
+            window = app;
+        } 
+    }))
+
+    
 }(window));
 // console.log(indexRouter);
