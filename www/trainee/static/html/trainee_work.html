@@ -1,0 +1,201 @@
+<style>
+    #content-nav-tabs > .active > a {
+        color: #cf4646 !important;
+    }
+    #content-nav-tabs > li > a {
+        color: #333;
+    }
+    .submit-work {
+        width: 60px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+        padding: 0;
+        font-size: 12px;
+        margin: -4px 0 0 -2px;
+    }
+    .submit-work:hover {
+        background: #cf4646;
+        color: #fff;
+        border: none;
+    }
+</style>
+<compont>
+    <div class="tabbable" id="tabs-876424">
+        <ul class="nav nav-tabs" id="content-nav-tabs">
+            <li class="active">
+                <a href="#panel-386054" data-toggle="tab">未完成</a>
+            </li>
+            <li>
+                <a href="#panel-812330" data-toggle="tab">已完成</a>
+            </li>
+            <li>
+                <a href="#panel-812340" data-toggle="tab">已过期</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="panel-386054">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                部门
+                            </th>
+                            <th>
+                                作业标题
+                            </th>
+                            <th>
+                                作业说明
+                            </th>
+                            <th>
+                                发布日期
+                            </th>
+                            <th>
+                                截止日期
+                            </th>
+                            <th>
+                                操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#unfinished}}
+                            <tr class="warning">
+                                <td>
+                                    {{ department }}
+                                </td>
+                                <td>
+                                    {{ title }}
+                                </td>
+                                <td>
+                                    {{ desc }}
+                                </td>
+                                <td>
+                                    {{ startTime }}
+                                </td>
+                                <td>
+                                    {{ endTime }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default submit-work">提交</button>
+                                </td>
+                            </tr>
+                        {{/unfinished}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="panel-812330">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                部门
+                            </th>
+                            <th>
+                                作业标题
+                            </th>
+                            <th>
+                                作业说明
+                            </th>
+                            <th>
+                                发布日期
+                            </th>
+                            <th>
+                                截止日期
+                            </th>
+                            <th>
+                                操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#finished}}
+                            <tr class="success">
+                                <td>
+                                    {{ department }}
+                                </td>
+                                <td>
+                                    {{ hw_title }}
+                                </td>
+                                <td>
+                                    {{ hw_detail }}
+                                </td>
+                                <td>
+                                    {{ startTime }}
+                                </td>
+                                <td>
+                                    {{ hw_deadline }}
+                                </td>
+                                <td>
+                                    <button class="submit" type="button" class="btn btn-default submit-work">提交</button>
+                                </td>
+                            </tr>
+                        {{/finished}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="panel-812340">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                部门
+                            </th>
+                            <th>
+                                作业标题
+                            </th>
+                            <th>
+                                作业说明
+                            </th>
+                            <th>
+                                发布日期
+                            </th>
+                            <th>
+                                截止日期
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {{#expired}}
+                        <tr class="error">
+                            <td>
+                                {{ department }}
+                            </td>
+                            <td>
+                                {{ title }}
+                            </td>
+                            <td>
+                                {{ desc }}
+                            </td>
+                            <td>
+                                {{ startTime }}
+                            </td>
+                            <td>
+                                {{ endTime }}
+                            </td>
+                        </tr>
+                    {{/expired}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script id="upload" src="/trainee/static/script/upload.js"></script>
+    <script>
+
+        $('#upload').on('load', function() {
+            $('.submit-work')
+                .on('click', function() {
+                    uploadObj.showUpload();
+                })
+            uploadObj.appendTo(document.body)
+            uploadObj.on('change', function() {
+                uploadObj.show() && uploadObj.upload({
+                    count: 0, 
+                    nowPos: 0,
+                    endPos: 0
+                });
+            })
+        })
+    </script>
+</compont>

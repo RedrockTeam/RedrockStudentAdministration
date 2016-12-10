@@ -1,0 +1,203 @@
+<style>
+    .work-inf {
+        color: #333;
+        margin-top: 10px;
+    }
+    .work-name {
+        font-size: 30px;
+        margin: 10px 0 20px -4px; 
+    }
+    #content-nav-tabs > .active > a {
+        color: #cf4646 !important;
+    }
+    #content-nav-tabs > li > a {
+        color: #333;
+    }
+    .submit-work {
+        width: 60px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+        padding: 0;
+        font-size: 12px;
+        margin: -4px 0 0 -2px;
+    }
+    .submit-work:hover {
+        background: #cf4646;
+        color: #fff;
+        border: none;
+    }
+    .score-input {
+        width: 40px;
+        margin: -4px 6px 0 0;
+        margin-bottom: 0 !important;
+    }
+</style>
+<compont>
+    <div class="work-inf">
+        <p class="work-name">
+            {{ homeworkMessage.hw_title }}
+        </p>
+        <p>作业说明：{{ homeworkMessage.hw_detail }}</p>
+        <p>截止时间：{{ homeworkMessage.hw_deadline }}</p>
+        <p>上交情况 100/200</p>
+    </div>
+    <div class="tabbable" id="tabs-876424">
+        <ul class="nav nav-tabs" id="content-nav-tabs">
+            <li class="active">
+                <a href="#panel-386054" data-toggle="tab">已上交</a>
+            </li>
+            <li>
+                <a href="#panel-812330" data-toggle="tab">未上交</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="panel-386054">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                姓名
+                            </th>
+                            <th>
+                                学号
+                            </th>
+                            <th>
+                                上交时间
+                            </th>
+                            <th>
+                                作业评分
+                            </th>
+                            <th>
+                                操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#homeworkCondition}}
+                            <tr class="warning">
+                                <td>
+                                    {{ stu_name }}
+                                </td>
+                                <td>
+                                    {{ stu_num }}
+                                </td>
+                                <td>
+                                    {{ hw_time }}
+                                </td>
+                                <td>
+                                    {{ hw_score }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default submit-work">预览</button>
+                                    <a download="{{ downloadPlace }}" href="{{ downloadPlace }}" class="btn btn-default submit-work">下载</a>
+                                    <input type="text" class="score-input">
+                                    <button data-id="{{ id }}" type="button" class="btn btn-default submit-work mark">评分</button>
+                                    <button data-id="{{ id }}" type="button" class="btn btn-default submit-work delete">删除</button>
+                                </td>
+                            </tr>
+                        {{/homeworkCondition}}
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <ul>
+                        <li>
+                            <a href="#">上一页</a>
+                        </li>
+                        <li>
+                            <a href="#">1</a>
+                        </li>
+                        <li>
+                            <a href="#">2</a>
+                        </li>
+                        <li>
+                            <a href="#">3</a>
+                        </li>
+                        <li>
+                            <a href="#">4</a>
+                        </li>
+                        <li>
+                            <a href="#">5</a>
+                        </li>
+                        <li>
+                            <a href="#">下一页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-pane" id="panel-812330">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                姓名
+                            </th>
+                            <th>
+                                学号
+                            </th>
+                            <th>
+                                作业完成度
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#nhwList}}
+                            <tr class="warning">
+                                <td>
+                                    {{ s_name }}
+                                </td>
+                                <td>
+                                    {{ s_id }}
+                                </td>
+                                <td>
+                                    {{ s_pro }}
+                                </td>
+                        {{/nhwList}}
+                    </tr></tbody>
+                </table>
+                <div class="pagination">
+                    <ul>
+                        <li>
+                            <a href="#">上一页</a>
+                        </li>
+                        <li>
+                            <a href="#">1</a>
+                        </li>
+                        <li>
+                            <a href="#">2</a>
+                        </li>
+                        <li>
+                            <a href="#">3</a>
+                        </li>
+                        <li>
+                            <a href="#">4</a>
+                        </li>
+                        <li>
+                            <a href="#">5</a>
+                        </li>
+                        <li>
+                            <a href="#">下一页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    $('.mark')
+        .on('click', function () {
+            var $this = $(this);
+            var score = $this.prev().val();
+            $.get('/trainee/home/index/route?role=manager&action=changeHw', {
+                id: $this.attr('data-id'),
+                score: score
+            })
+                .then(function (res) {
+                    alert(res.message);
+                    if (res.status === 200) {
+                        $this.parent().prev().html(score);
+                    }
+                });
+        })
+    </script>
+</compont>

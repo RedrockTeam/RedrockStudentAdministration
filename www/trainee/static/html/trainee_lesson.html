@@ -1,0 +1,96 @@
+<style>
+     #content-nav-tabs > .active > a {
+        color: #cf4646 !important;
+    }
+    #content-nav-tabs > li > a {
+        color: #333;
+    }
+    .download {
+        width: 60px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+        padding: 0;
+        font-size: 12px;
+        margin: -4px 0 0 -2px;
+    }
+    .download:hover {
+        background: #cf4646;
+        color: #fff;
+        border: none;
+    }
+    .download-all {
+        float: right;
+        margin-right: 108px;
+        display: none;
+    }
+</style>
+<compont>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+            {{ defaultBName }}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+            {{#branch}}
+                <li role="presentation"><a class="menuitem" data-b_id="{{ b_id }}" role="menuitem" tabindex="-1" href="#">{{ b_name }}</a></li>
+            {{/branch}}
+        </ul>
+    </div>
+    <div class="tabbable" id="tabs-876424">
+        <div class="tab-content">
+            <div class="tab-pane active">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input id="chooseAll" type="checkbox" name="">
+                            </th>
+                            <th>
+                                部门
+                            </th>
+                            <th>
+                                课件（资料）标题
+                            </th>
+                            <th>
+                                课件（资料）说明
+                            </th>
+                            <th>
+                                发布日期
+                            </th>
+                            <th>
+                                操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="lesson-container">
+                        {{#courseWare}}
+                        <tr class="info">
+                            <th>
+                                <input type="checkbox" class="check-one">
+                            </th>
+                            <td>
+                                {{ cw_branch }}
+                            </td>
+                            <td>
+                                {{ cw_title }}
+                            </td>
+                            <td>
+                                {{ cw_detail }}
+                            </td>
+                            <td>
+                                {{ cw_time }}
+                            </td>
+                            <td>
+                                <a download="{{ cw_place }}" href="{{ cw_place }}" class="btn btn-default download">下载</a>
+                            </td>
+                        </tr>
+                        {{/courseWare}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <input type="button" class="btn btn-mini download-all" value="下载选中">
+    </div>
+    <script src="/trainee/static/script/trainee_lesson.js"></script>
+</compont>

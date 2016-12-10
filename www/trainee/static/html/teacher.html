@@ -1,0 +1,113 @@
+<compont>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    <div class="span3">
+                        <ul class="nav nav-tabs nav-stacked" id="left-nav-tabs">
+                            <li>
+                                <a id="peopleLink" href="/user/teacher/people_administration">人员管理</a>
+                            </li>
+                            <li>
+                                <a id="workLink" href="/user/teacher/work_administration">作业管理</a>
+                            </li>
+                            <li>
+                                <a id="lessonLink" href="/user/teacher/lesson_administration">课件资料管理</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="span9" style="margin-left: 0px">
+                        <h1 id="branchName" style="padding: 0 0 20px 20px">WEB研发部</h1>
+                        <div id="traineeWorkApp" class="span12"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        ;(function () {
+            var traineeWorkApp = document.getElementById('traineeWorkApp');
+            var peopleLink = document.getElementById('peopleLink'),
+                workLink = document.getElementById('workLink'),
+                lessonLink = document.getElementById('lessonLink');
+            var activeTarget;
+            var userInf = JSON.parse(localStorage.getItem('userInf'));
+
+            document.getElementById('branchName').innerHTML = userInf.managerInfo.b_name;
+
+            var changeActiveTarget = function (target) {
+                if (activeTarget !== target) {
+                    if (activeTarget) activeTarget.className = '';
+                    activeTarget = target;
+                    activeTarget.className = 'active';
+                }
+            }
+            teacherIndexRouter.route('/people_administration', function (next) {
+                changeActiveTarget(peopleLink.parentNode);
+                $.get('/trainee/home/index/route?role=manager&action=personManage', {
+                    type: 'up',
+                    page: '1',
+                })
+                    .then(function (res) { 
+                        this.render('/trainee/static/html/teacher_people.html', {
+                            target: traineeWorkApp,
+                            data: res
+                        })
+                            .then(function () {
+                                next();
+                            });
+                    }.bind(this))
+            });
+            teacherIndexRouter.route('/work_administration', function (next) {
+                changeActiveTarget(workLink.parentNode);
+                $.get('/trainee/home/index/route?role=manager&action=ifEnd')
+                    .then(function (res) {
+                        this.render('/trainee/static/html/teacher_work.html', {
+                            target: traineeWorkApp,
+                            data: res
+                        })
+                            .then(function () {
+                                next();
+                            });
+                    }.bind(this))
+            });
+            teacherIndexRouter.route('/lesson_administration', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
+                changeActiveTarget(lessonLink.parentNode);
+                $.get('/trainee/home/index/route?role=student&action=getCourseWare', {
+                    b_id: userInf.managerInfo.id
+                }).then(function (res) {
+                    this.render('/trainee/static/html/teacher_lesson.html', {
+                        target: traineeWorkApp,
+                        data: {
+                            courseWare: JSON.parse(res.courseWare)
+                        }
+                    })
+                        .then(function () {
+                            next();
+                        });
+                }.bind(this))
+            });
+            teacherIndexRouter.route('/watch_homework', function (next) {
+                $.get('/trainee/home/index/route?role=manager&action=getHomeworkConditionById', {
+                    id: this.req.getQuery().id
+                })
+                    .then(function (res) {
+                        this.render('/trainee/static/html/watch_homework.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                homeworkMessage: res.homeworkMessage[0],
+                                homeworkCondition: res.homeworkCondition
+                            }
+                        })
+                    .then(function () {
+                        next();
+                    });
+                }.bind(this));
+            });
+            app.capture(peopleLink);
+            app.capture(workLink);
+            app.capture(lessonLink);
+        }());
+    </script>
+</compont> 

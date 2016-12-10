@@ -1,0 +1,99 @@
+<compont>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    <div class="span3">
+                        <ul class="nav nav-tabs nav-stacked" id="left-nav-tabs">
+                            <li>
+                                <a id="infLink" href="/user/trainee/my_inf">我的信息</a>
+                            </li>
+                            <li>
+                                <a id="workLink" href="/user/trainee/my_work">作业任务</a>
+                            </li>
+                            <li>
+                                <a id="lessonLink" href="/user/trainee/my_lesson">课件资料</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="traineeWorkApp" class="span9"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        ;(function () {
+            var traineeWorkApp = document.getElementById('traineeWorkApp');
+            var infLink = document.getElementById('infLink'),
+                workLink = document.getElementById('workLink'),
+                lessonLink = document.getElementById('lessonLink');
+            var activeTarget;
+            var changeActiveTarget = function (target) {
+                if (activeTarget !== target) {
+                    if (activeTarget) activeTarget.className = '';
+                    activeTarget = target;
+                    activeTarget.className = 'active';
+                }
+            }
+            traineeIndexRouter.route('/my_inf', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
+                changeActiveTarget(infLink.parentNode);
+                $.get('./')
+                    .then(function (res) {
+                        return this.render('/trainee/static/html/trainee_inf.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                userName: '梁宸',
+                                userRole: '学员',
+                                userAcademy: userInf.stuBase.stuacademy,
+                                userStuId: userInf.stuBase.stunum,
+                                userDepartment: userInf.stuBase.branch.map(function (item) {return item.b_name}).join(' | ')
+                            }
+                        });
+                    }.bind(this))
+                    .then(function () {
+                        next();
+                    });
+            });
+            traineeIndexRouter.route('/my_work', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
+                changeActiveTarget(workLink.parentNode);
+                $.get('/trainee/home/index/route?role=student&action=getHomeWorkById', {
+                    id: userInf.stuBase.id
+                })
+                    .then(function (res) {
+                        return this.render('/trainee/static/html/trainee_work.html', {
+                            target: traineeWorkApp,
+                            data: res.homeworks
+                        })
+                    }.bind(this))
+                    .then(function () {
+                        next();
+                    })
+            });
+            traineeIndexRouter.route('/my_lesson', function (next) {
+                var userInf = JSON.parse(localStorage.getItem('userInf'));
+                changeActiveTarget(lessonLink.parentNode);
+                $.get('/trainee/home/index/route?role=student&action=getCourseWare&b_id=' + userInf.stuBase.branch[0].b_id)
+                    .then(function (res) {
+                        var branch = userInf.stuBase.branch;
+                        return this.render('/trainee/static/html/trainee_lesson.html', {
+                            target: traineeWorkApp,
+                            data: {
+                                courseWare: JSON.parse(res.courseWare),
+                                branch: branch,
+                                defaultBName: branch[0].b_name
+                            },
+                        })
+                            .then(function () {
+                                next();
+                            });
+                    }.bind(this))
+            });
+            app.capture(infLink);
+            app.capture(workLink);
+            app.capture(lessonLink);
+        }());
+        var arr = [];
+    </script>
+</compont> 
