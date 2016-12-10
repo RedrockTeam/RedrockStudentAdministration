@@ -44,12 +44,12 @@
             }
             teacherIndexRouter.route('/people_administration', function (next) {
                 changeActiveTarget(peopleLink.parentNode);
-                $.get('/home/index/route?role=manager&action=personManage', {
+                $.get('/trainee/home/index/route?role=manager&action=personManage', {
                     type: 'up',
                     page: '1',
                 })
                     .then(function (res) { 
-                        this.render('/static/html/teacher_people.html', {
+                        this.render('/trainee/static/html/teacher_people.html', {
                             target: traineeWorkApp,
                             data: res
                         })
@@ -60,9 +60,9 @@
             });
             teacherIndexRouter.route('/work_administration', function (next) {
                 changeActiveTarget(workLink.parentNode);
-                $.get('/home/index/route?role=manager&action=ifEnd')
+                $.get('/trainee/home/index/route?role=manager&action=ifEnd')
                     .then(function (res) {
-                        this.render('/static/html/teacher_work.html', {
+                        this.render('/trainee/static/html/teacher_work.html', {
                             target: traineeWorkApp,
                             data: res
                         })
@@ -74,10 +74,10 @@
             teacherIndexRouter.route('/lesson_administration', function (next) {
                 var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(lessonLink.parentNode);
-                $.get('/home/index/route?role=student&action=getCourseWare', {
+                $.get('/trainee/home/index/route?role=student&action=getCourseWare', {
                     b_id: userInf.managerInfo.id
                 }).then(function (res) {
-                    this.render('/static/html/teacher_lesson.html', {
+                    this.render('/trainee/static/html/teacher_lesson.html', {
                         target: traineeWorkApp,
                         data: {
                             courseWare: JSON.parse(res.courseWare)
@@ -89,11 +89,11 @@
                 }.bind(this))
             });
             teacherIndexRouter.route('/watch_homework', function (next) {
-                $.get('/home/index/route?role=manager&action=getHomeworkConditionById', {
+                $.get('/trainee/home/index/route?role=manager&action=getHomeworkConditionById', {
                     id: this.req.getQuery().id
                 })
                     .then(function (res) {
-                        this.render('/static/html/watch_homework.html', {
+                        this.render('/trainee/static/html/watch_homework.html', {
                             target: traineeWorkApp,
                             data: {
                                 homeworkMessage: res.homeworkMessage[0],

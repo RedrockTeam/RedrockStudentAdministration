@@ -188,7 +188,7 @@
         .on('click', function () {
             var $this = $(this);
             var score = $this.prev().val();
-            $.get('/home/index/route?role=manager&action=changeHw', {
+            $.get('/trainee/home/index/route?role=manager&action=changeHw', {
                 id: $this.attr('data-id'),
                 score: score
             })

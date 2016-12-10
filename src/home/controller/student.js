@@ -338,4 +338,16 @@ export default class extends Base {
       throw new Error(err)
     })
   }
+  async fuckAction(){
+    for(let i = 1; i <= 60; i++){
+      await this
+      .model('stubranch')
+      .add({
+        stu_id: i,
+        b_id: 3,
+        sb_score: 0,
+        sb_commit: 0
+      })
+    }
+  }
 }

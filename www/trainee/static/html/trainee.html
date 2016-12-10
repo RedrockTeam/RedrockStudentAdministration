@@ -40,7 +40,7 @@
                 changeActiveTarget(infLink.parentNode);
                 $.get('./')
                     .then(function (res) {
-                        return this.render('/static/html/trainee_inf.html', {
+                        return this.render('/trainee/static/html/trainee_inf.html', {
                             target: traineeWorkApp,
                             data: {
                                 userName: '梁宸',
@@ -58,11 +58,11 @@
             traineeIndexRouter.route('/my_work', function (next) {
                 var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(workLink.parentNode);
-                $.get('/home/index/route?role=student&action=getHomeWorkById', {
+                $.get('/trainee/home/index/route?role=student&action=getHomeWorkById', {
                     id: userInf.stuBase.id
                 })
                     .then(function (res) {
-                        return this.render('/static/html/trainee_work.html', {
+                        return this.render('/trainee/static/html/trainee_work.html', {
                             target: traineeWorkApp,
                             data: res.homeworks
                         })
@@ -74,10 +74,10 @@
             traineeIndexRouter.route('/my_lesson', function (next) {
                 var userInf = JSON.parse(localStorage.getItem('userInf'));
                 changeActiveTarget(lessonLink.parentNode);
-                $.get('/home/index/route?role=student&action=getCourseWare&b_id=' + userInf.stuBase.branch[0].b_id)
+                $.get('/trainee/home/index/route?role=student&action=getCourseWare&b_id=' + userInf.stuBase.branch[0].b_id)
                     .then(function (res) {
                         var branch = userInf.stuBase.branch;
-                        return this.render('/static/html/trainee_lesson.html', {
+                        return this.render('/trainee/static/html/trainee_lesson.html', {
                             target: traineeWorkApp,
                             data: {
                                 courseWare: JSON.parse(res.courseWare),

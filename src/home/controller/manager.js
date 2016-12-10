@@ -442,8 +442,8 @@ export default class extends Base {
         })
     //跟新缓存
       let _redis = this.creatRedisCilent()
-      const key = 'courseWare'
       _redis.hdel('courseWare', b_id)
+      _redis.quit()
       return this.json({
           status: 200,
           message: "上传成功"
@@ -462,7 +462,7 @@ export default class extends Base {
     .model('homework')
     .getHomeworkMessage(partern.get.id)
     //data.previewPlace = 
-    this.json({
+    return this.json({
       homeworkMessage: homeworMessage,
       homeworkCondition: homeworkCondition
     })

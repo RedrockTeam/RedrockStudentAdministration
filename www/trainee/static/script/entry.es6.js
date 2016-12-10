@@ -1,7 +1,7 @@
 'use strict';
 
 ;(function () {
-    app.setRootLocation('/home/view');
+    app.setRootLocation('/trainee/home/view');
     var Router = app.Router;
     var entryApp = document.getElementById('entryApp');
     var loginRouter = new Router();
@@ -19,7 +19,7 @@
 
     loginRouter.route('/login', function (next) {
         changeTitle('登陆');
-        this.render('/static/html/login.html', entryApp).then(function () {
+        this.render('/trainee/static/html/login.html', entryApp).then(function () {
             next();
         });
     });
@@ -32,13 +32,13 @@
     });
     traineeIndexRouter = userRouter.route('/trainee', function (next) {
         changeTitle('学员主页');
-        this.render('/static/html/trainee.html', entryApp).then(function () {
+        this.render('/trainee/static/html/trainee.html', entryApp).then(function () {
             next();
         });
     });
     teacherIndexRouter = userRouter.route('/teacher', function (next) {
         changeTitle('管理员主页');
-        this.render('/static/html/teacher.html', entryApp).then(function () {
+        this.render('/trainee/static/html/teacher.html', entryApp).then(function () {
             next();
         });
     });
