@@ -4,5 +4,5 @@
  */
 export default {
   route_on: true,
-  pathname_prefix: "/trainee", 
+  pathname_prefix: "trainee", 
 };
