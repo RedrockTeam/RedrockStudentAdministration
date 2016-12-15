@@ -19,86 +19,8 @@
         color: #fff;
         border: none;
     }
-    #pubHomeWork {
-        display: none;
-    }
-    #pubHomeWorkInf {
-        width: 400px;
-        height: 400px;
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        margin: auto;
-        border-radius: 6px;
-    }
-    .form-upload {
-        width: 360px;
-        padding: 19px 29px 29px;
-        position: absolute;
-        left: 50%;
-        top: 48%;
-        margin: -125px -180px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-        -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-        box-shadow: 0 1px 2px rgba(0,0,0,.05);
-    }
-    .form-upload-heading {
-        color: #cf4646;
-    }
-    .form-upload .form-upload-heading,
-    .form-upload .checkbox {
-        margin-bottom: 10px;
-    }
-    .form-upload input[type="text"],
-    .form-upload input[type="password"] {
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        font-size: 14px;
-        height: auto;
-        margin-bottom: 15px;
-        padding: 7px 9px;
-    }
-    .upload-btn {
-        background: #cf4646;
-        border: none;
-        font-size: 14px;
-    }
-    .upload-btn:hover {
-        background: red;
-    }
-    .pub-container {
-        display: none;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1;
-        position: absolute;
-        left: 0;
-        top: 0;
-    }
-    textarea {
-        min-width: 100%;
-        max-width: 100%;
-        display: block;
-    }
 </style>
-<Compont>
-    <div class="pub-container">
-        <form class="form-upload">
-            <input type="text" class="input-block-level" id="hwTitle" placeholder="作业标题">
-            <input id="deadline" type="text" name="" placeholder="截止日期">
-            <textarea placeholder="作业描述"></textarea>
-            <input id="pubHomeWork" type="file" name="">
-            <button id="uploadBtn" class="btn btn-large btn-primary upload-btn" type="submit">发布</button>
-      </form>
-    </div>
+<compont>
     <div class="tabbable" id="tabs-876424">
         <ul class="nav nav-tabs" id="content-nav-tabs">
             <li class="active">
@@ -107,8 +29,8 @@
             <li>
                 <a href="#panel-812330" data-toggle="tab">已截止</a>
             </li>
-            <li style="float: right; margin-right: 20px;">   
-                <button type="button" class="btn btn-default pub-homework">发布作业</button>
+            <li style="float: right; margin-right: 20px">   
+                <button type="button" class="btn btn-default">发布作业</button>
             </li>
         </ul>
         <div class="tab-content">
@@ -149,7 +71,7 @@
                                 {{ hw_detail }}
                             </td>
                             <td>
-                                {{ hw_publish }}
+                                {{ hw_place }}
                             </td>
                             <td>
                                 {{ hw_deadline }}
@@ -225,7 +147,7 @@
                                 {{ hw_detail }}
                             </td>
                             <td>
-                                {{ hw_publish }}
+                                {{ hw_place }}
                             </td>
                             <td>
                                 {{ hw_deadline }}
@@ -268,30 +190,5 @@
     </div>
     <script>
         app.capture(document.getElementsByClassName('preview'));
-        $('.pub-container').on('click', function() {
-            $(this).hide()
-        });
-        $('.pub-homework').on('click', function() {
-            $('.pub-container').show();
-        });
-        $('.form-upload').on('click', function(e) {
-            e.stopPropagation();
-        })
-        $('#uploadBtn').on('click', function(e) {
-            e.preventDefault();
-            $.post('/home/index/route?role=manager&action=publishWork', {
-                id: JSON.parse(localStorage.getItem('userInf')).managerInfo.id,
-                title: $('#hwTitle').val(),
-                expain: $('textarea').val(),
-                time: $('#deadline').val(), 
-            }).done(function(res) {
-                if (res.status === 200) {
-                    alert('发布成功');
-                } else {
-                    alert('发布失败');
-                }
-                window.location.reload()
-            }).fail(function(res) {});
-        })
     </script>
-</Compont>
+</compont>

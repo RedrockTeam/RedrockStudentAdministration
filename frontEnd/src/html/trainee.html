@@ -40,10 +40,10 @@
                 changeActiveTarget(infLink.parentNode);
                 $.get('./')
                     .then(function (res) {
-                        return this.render('/static/html/trainee_inf.html', {
+                        return this.render('/trainee/static/html/trainee_inf.html', {
                             target: traineeWorkApp,
                             data: {
-                                userName: '梁宸',
+                                userName: userInf.stuBase.stuname,
                                 userRole: '学员',
                                 userAcademy: userInf.stuBase.stuacademy,
                                 userStuId: userInf.stuBase.stunum,
@@ -62,7 +62,7 @@
                     id: userInf.stuBase.id
                 })
                     .then(function (res) {
-                        return this.render('/static/html/trainee_work.html', {
+                        return this.render('/trainee/static/html/trainee_work.html', {
                             target: traineeWorkApp,
                             data: res.homeworks
                         })
@@ -77,7 +77,7 @@
                 $.get('/home/index/route?role=student&action=getCourseWare&b_id=' + userInf.stuBase.branch[0].b_id)
                     .then(function (res) {
                         var branch = userInf.stuBase.branch;
-                        return this.render('/static/html/trainee_lesson.html', {
+                        return this.render('/trainee/static/html/trainee_lesson.html', {
                             target: traineeWorkApp,
                             data: {
                                 courseWare: JSON.parse(res.courseWare),

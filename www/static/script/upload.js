@@ -56,11 +56,8 @@ var uploadObj = (function() {
                 alert('文件必须为zip压缩包');
                 return false
             }
-            uploadContent.css('display', 'block');
+            uploadContent.show();
             return true
-        },
-        showinf: function(msg) {
-            $('#uploadMsg > h2').html(msg)
         },
         hide: function() {
             uploadContent.hide();
@@ -72,15 +69,12 @@ var uploadObj = (function() {
             $(fileInput).on(type, cb);
         },
         upload: function(url) {
-            var hasUpload = 0;
-            var all = 0;
             var count = 0;
             var nowPos = 0;
             var endPos = 0;
             var file = getFiles()[0];
             var data;
             while(file.size > nowPos) {
-                all ++;
                 if (nowPos + fileSize > file.size)
                     endPos = file.size
                 else
@@ -94,15 +88,6 @@ var uploadObj = (function() {
                     processData: false,
                     contentType: false
                 }).done(function(res) {
-                    if (res.status === 200) {
-                        $('.progress-bar').css('width', ++hasUpload / all * 100 + '%')
-                        if (hasUpload === all) {
-                            alert('上传完成');
-                            uploadObj.hide();
-                        } else {
-                            alert('服务器错误，请稍后重试');
-                        }
-                    }
                 }).fail(function(res) {});
                 nowPos = endPos
             }
